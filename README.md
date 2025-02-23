@@ -1,7 +1,7 @@
 # Task Management System
 
 ## Описание
-Task Management System — это API для управления задачами, разработанное на Java 17 с использованием Spring Boot, 
+Task Management System — это API для управления задачами, разработанное на Java 21 с использованием Spring Boot, 
 Spring Security и JWT для аутентификации. В качестве базы данных используется PostgreSQL.
 
 ## Функциональность
