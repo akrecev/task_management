@@ -1,0 +1,35 @@
+services:
+
+  task_manager_db:
+    image: postgres:15
+    container_name: task_manager_db
+    environment:
+      POSTGRES_DB: ${TM_DB}
+      POSTGRES_USER: ${TM_USER}
+      POSTGRES_PASSWORD: ${TM_PASSWORD}
+    env_file:
+      - .env
+    ports:
+      - "5435:5432"
+    volumes:
+      - task_manager_data:/var/lib/postgresql/data
+
+  task_manager_service:
+    image: task_manager_service:latest
+    container_name: task_manager_service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://task_manager_db:5432/${TM_DB}
+      SPRING_DATASOURCE_USERNAME: ${TM_USER}
+      SPRING_DATASOURCE_PASSWORD: ${TM_PASSWORD}
+    depends_on:
+      - task_manager_db
+
+volumes:
+  task_manager_data:
