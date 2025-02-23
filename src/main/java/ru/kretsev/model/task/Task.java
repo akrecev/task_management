@@ -1,10 +1,12 @@
 package ru.kretsev.model.task;
 
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.kretsev.model.comment.Comment;
 import ru.kretsev.model.user.User;
 
 @Data
@@ -15,7 +17,7 @@ import ru.kretsev.model.user.User;
 @Table(name = "tasks")
 public class Task {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -24,7 +26,10 @@ public class Task {
     @Column(nullable = false)
     private String description;
 
+    @Enumerated(EnumType.STRING)
     private TaskStatus status;
+
+    @Enumerated(EnumType.STRING)
     private Priority priority;
 
     @ManyToOne
@@ -34,4 +39,7 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "assignee_id")
     private User assignee;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 }

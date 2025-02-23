@@ -1,5 +1,6 @@
 package ru.kretsev.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.Collection;
 import java.util.List;
@@ -17,7 +18,7 @@ import ru.kretsev.model.token.Token;
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -37,6 +38,7 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
+    @JsonIgnore
     private transient List<Token> tokens;
 
     @Override

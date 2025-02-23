@@ -16,7 +16,7 @@ import ru.kretsev.model.user.User;
 @Table(name = "comments")
 public class Comment {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)

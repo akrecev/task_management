@@ -5,7 +5,7 @@ spring:
   config:
     import: optional:file:.env[.properties]
   datasource:
-    url: jdbc:postgresql://localhost:5435/${TM_DB}
+    url: jdbc:postgresql://localhost:5435/${TM_DB:task_manager_db}
     username: ${TM_USER}
     password: ${TM_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -14,13 +14,16 @@ spring:
       mode: never
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
 
 logging:
   level:
