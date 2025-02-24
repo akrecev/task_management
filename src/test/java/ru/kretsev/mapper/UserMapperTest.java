@@ -22,6 +22,7 @@ class UserMapperTest {
     void setUp() {
         registerRequest = new RegisterRequest("Firstname", "Lastname", "test@test.com", "password");
         user = User.builder()
+                .id(100500L)
                 .firstname("Firstname")
                 .lastname("Lastname")
                 .email("test@test.com")
@@ -51,6 +52,7 @@ class UserMapperTest {
 
         // then
         assertNotNull(userShortDto);
+        assertEquals(user.getId(), userShortDto.id());
         assertEquals(user.getFirstname(), userShortDto.firstname());
         assertEquals(user.getLastname(), userShortDto.lastname());
     }

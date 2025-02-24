@@ -1,3 +1,3 @@
 package ru.kretsev.dto.user;
 
-public record UserShortDto(String firstname, String lastname) {}
+public record UserShortDto(Long id, String firstname, String lastname) {}
