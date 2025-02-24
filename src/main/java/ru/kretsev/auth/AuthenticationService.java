@@ -3,6 +3,7 @@ package ru.kretsev.auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kretsev.dto.user.AuthenticationRequest;
@@ -39,7 +40,11 @@ public class AuthenticationService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
-        var user = userRepository.findByEmail(request.email()).orElseThrow();
+        var user = userRepository
+                .findByEmail(request.email())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getEmail(), request.password()));
         var jwtToken = jwtService.generateToken(user);
 
         return new AuthenticationResponse(jwtToken);

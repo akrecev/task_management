@@ -38,6 +38,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(BEARER_PREFIX.length());
+
+        if (jwtService.isTokenExpired(jwt)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         userEmail = jwtService.getUsername(jwt);
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
