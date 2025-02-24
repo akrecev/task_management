@@ -25,6 +25,10 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
+jwt:
+  secret: ${JWT_SECRET_KEY}
+  expiration: 3600
+
 logging:
   level:
     root: info
