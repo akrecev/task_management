@@ -3,6 +3,7 @@ package ru.kretsev.auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,23 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        User user = User.builder()
+        var role = Role.USER;
+
+        if (request.role() != null && request.role().equals(Role.ADMIN.name())) {
+            var authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null
+                    && authentication.getAuthorities().stream()
+                            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                role = Role.ADMIN;
+            }
+        }
+
+        var user = User.builder()
                 .firstname(request.firstname())
                 .lastname(request.lastname())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .role(Role.USER)
+                .role(role)
                 .build();
         userRepository.save(user);
 

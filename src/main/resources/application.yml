@@ -29,6 +29,12 @@ jwt:
   secret: ${JWT_SECRET_KEY}
   expiration: 3600
 
+first-admin:
+  firstname: ${INIT_ADMIN_FIRSTNAME}
+  lastname: ${INIT_ADMIN_LASTNAME}
+  email: ${INIT_ADMIN_EMAIL}
+  password: ${INIT_ADMIN_PASSWORD}
+
 logging:
   level:
     root: info

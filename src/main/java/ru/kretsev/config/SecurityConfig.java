@@ -28,6 +28,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
                                 "/token/**", "/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**")
                         .permitAll()
+                        .requestMatchers("/api/v1/tasks/**")
+                        .hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/api/v1/admin/**")
+                        .hasRole("ADMIN")
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

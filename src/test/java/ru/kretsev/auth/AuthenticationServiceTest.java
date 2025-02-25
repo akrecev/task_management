@@ -66,7 +66,7 @@ class AuthenticationServiceTest {
     @Test
     @DisplayName("Регистрация нового пользователя - успешный сценарий")
     void testRegister_Success() {
-        RegisterRequest request = new RegisterRequest("John", "Doe", EMAIL, PASSWORD);
+        RegisterRequest request = new RegisterRequest("John", "Doe", EMAIL, PASSWORD, "USER");
         User user = createTestUser();
 
         when(passwordEncoder.encode(request.password())).thenReturn(ENCODED_PASSWORD);

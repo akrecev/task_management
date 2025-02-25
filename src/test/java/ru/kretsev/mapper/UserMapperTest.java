@@ -19,7 +19,8 @@ class UserMapperTest {
     @DisplayName("Должен корректно маппить registerRequest в user")
     void shouldMapRegisterRequestToUser() {
         // given
-        RegisterRequest registerRequest = new RegisterRequest("Firstname", "Lastname", "test@test.com", "password");
+        RegisterRequest registerRequest =
+                new RegisterRequest("Firstname", "Lastname", "test@test.com", "password", "USER");
 
         // when
         User mappedUser = userMapper.toEntity(registerRequest);
