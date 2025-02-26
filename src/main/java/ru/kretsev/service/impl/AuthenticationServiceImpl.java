@@ -1,6 +1,7 @@
 package ru.kretsev.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +21,7 @@ import ru.kretsev.service.AuthenticationService;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -29,6 +31,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
+        log.info("Попытка регистрации пользователя: email={}", request.email());
+
         var role = Role.ROLE_USER;
 
         if (request.role() != null && request.role().equals(Role.ROLE_ADMIN.name())) {
@@ -50,20 +54,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
 
         var jwtToken = jwtService.generateToken(user);
+        log.info("Пользователь успешно зарегистрирован: email={}", request.email());
 
         return new AuthenticationResponse(jwtToken);
     }
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        log.info("Попытка аутентификации пользователя: email={}", request.email());
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
         var user = userRepository
                 .findByEmail(request.email())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> {
+                    log.error("Пользователь с email={} не найден", request.email());
+                    return new UsernameNotFoundException("User not found");
+                });
 
         var jwtToken = jwtService.generateToken(user);
+        log.info("Пользователь успешно аутентифицирован: email={}", request.email());
 
         return new AuthenticationResponse(jwtToken);
     }

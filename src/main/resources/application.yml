@@ -36,6 +36,9 @@ first-admin:
   password: ${INIT_ADMIN_PASSWORD}
 
 logging:
+  file:
+    path: ${LOG_PATH}
+    name: ${LOG_FILE}
   level:
     root: info
     sql: trace
