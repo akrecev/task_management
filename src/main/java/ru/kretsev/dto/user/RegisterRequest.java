@@ -12,10 +12,4 @@ public record RegisterRequest(
         @NotBlank(message = "Password is required")
                 @Size(min = 6, message = "Password must be at least 6 characters long")
                 String password,
-        @Pattern(regexp = "ADMIN|USER", message = "Role must be either ADMIN or USER") String role) {
-    public RegisterRequest {
-        if (role == null) {
-            role = "USER"; // Значение по умолчанию
-        }
-    }
-}
+        @Pattern(regexp = "ADMIN|USER", message = "Role must be either ADMIN or USER") String role) {}

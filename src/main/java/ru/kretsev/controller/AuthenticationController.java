@@ -6,13 +6,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 import ru.kretsev.dto.user.AuthenticationRequest;
 import ru.kretsev.dto.user.AuthenticationResponse;
 import ru.kretsev.dto.user.RegisterRequest;
+import ru.kretsev.dto.user.UserShortDto;
 import ru.kretsev.service.AuthenticationService;
 
 @RestController
@@ -42,5 +42,13 @@ public class AuthenticationController {
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
+    }
+
+    @Operation(summary = "Получение информации о текущем пользователе")
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserShortDto> getCurrentUser(Authentication authentication) {
+        UserShortDto userDto = authenticationService.getUserByUsername(authentication.getName());
+        return ResponseEntity.ok(userDto);
     }
 }

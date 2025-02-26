@@ -1,5 +1,7 @@
 package ru.kretsev.config;
 
+import static ru.kretsev.model.user.Role.*;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,12 +28,12 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                                "/token/**", "/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**")
+                                "/token/**", "/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/webjars/**")
                         .permitAll()
                         .requestMatchers("/api/v1/tasks/**")
-                        .hasAnyRole("ADMIN", "USER")
+                        .hasAnyAuthority(ADMIN.name(), USER.name())
                         .requestMatchers("/api/v1/admin/**")
-                        .hasRole("ADMIN")
+                        .hasAuthority(ADMIN.name())
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

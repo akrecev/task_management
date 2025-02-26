@@ -65,13 +65,13 @@ class TaskMapperTest {
                 "Task description",
                 TaskStatus.IN_PROGRESS.name(),
                 Priority.HIGH.name(),
-                new UserShortDto(1L, "John", "Doe"),
-                new UserShortDto(2L, "Jane", "Smith"),
+                new UserShortDto(1L, "John", "Doe", Role.USER.name()),
+                new UserShortDto(2L, "Jane", "Smith", Role.USER.name()),
                 List.of(new CommentDto(
                         100L,
                         "Test comment",
                         new TaskShortDto(10L, "Test Task"),
-                        new UserShortDto(1L, "John", "Doe"))));
+                        new UserShortDto(1L, "John", "Doe", Role.USER.name()))));
     }
 
     @Test

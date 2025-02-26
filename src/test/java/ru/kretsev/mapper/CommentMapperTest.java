@@ -57,7 +57,7 @@ class CommentMapperTest {
                 100L,
                 "This is a test comment",
                 new TaskShortDto(10L, "Test Task"),
-                new UserShortDto(1L, "John", "Doe"));
+                new UserShortDto(1L, "John", "Doe", Role.USER.name()));
     }
 
     @Test

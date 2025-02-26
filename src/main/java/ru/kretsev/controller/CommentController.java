@@ -27,9 +27,9 @@ public class CommentController {
         return ResponseEntity.ok(commentService.addComment(taskId, commentDto, user));
     }
 
-    @Operation(summary = "Удалить комментарий (только администратор)")
+    @Operation(summary = "Удалить комментарий (только если это свой комментарий или админ)")
     @DeleteMapping("/{commentId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);
         return ResponseEntity.noContent().build();

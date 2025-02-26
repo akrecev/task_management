@@ -39,3 +39,6 @@ logging:
   level:
     root: info
     sql: trace
+    org:
+      springframework:
+        security: trace

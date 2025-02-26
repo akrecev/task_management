@@ -11,6 +11,8 @@ import ru.kretsev.auth.JwtService;
 import ru.kretsev.dto.user.AuthenticationRequest;
 import ru.kretsev.dto.user.AuthenticationResponse;
 import ru.kretsev.dto.user.RegisterRequest;
+import ru.kretsev.dto.user.UserShortDto;
+import ru.kretsev.mapper.UserMapper;
 import ru.kretsev.model.user.Role;
 import ru.kretsev.model.user.User;
 import ru.kretsev.repository.UserRepository;
@@ -23,6 +25,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserMapper userMapper;
 
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
@@ -63,5 +66,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var jwtToken = jwtService.generateToken(user);
 
         return new AuthenticationResponse(jwtToken);
+    }
+
+    @Override
+    public UserShortDto getUserByUsername(String username) {
+        var user =
+                userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return userMapper.toShortDto(user);
     }
 }

@@ -115,7 +115,8 @@ class AuthenticationServiceTest {
     @Test
     @DisplayName("Регистрация администратора - успешный сценарий")
     void testRegisterAdmin_Success() {
-        RegisterRequest request = new RegisterRequest("Admin", "Admin", "admin@example.com", "admin123", "ADMIN");
+        RegisterRequest request =
+                new RegisterRequest("Admin", "Admin", "admin@example.com", "admin123", Role.ADMIN.name());
         User admin = User.builder()
                 .id(2L)
                 .firstname("Admin")
@@ -143,7 +144,7 @@ class AuthenticationServiceTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         User savedUser = userCaptor.getValue();
-        assertEquals(Role.ADMIN, savedUser.getRole());
+        assertEquals(Role.ADMIN.name(), savedUser.getRole().name());
 
         SecurityContextHolder.clearContext();
     }
