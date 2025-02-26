@@ -3,6 +3,9 @@ package ru.kretsev.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import ru.kretsev.auth.AuthenticationFacade;
@@ -22,6 +25,13 @@ public class CommentServiceImpl implements CommentService {
     private final TaskRepository taskRepository;
     private final CommentMapper commentMapper;
     private final AuthenticationFacade authenticationFacade;
+
+    @Override
+    public Page<CommentDto> getCommentsByTaskId(Long taskId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comment> commentsPage = commentRepository.findByTaskId(taskId, pageable);
+        return commentsPage.map(commentMapper::toDto);
+    }
 
     @Override
     public CommentDto addComment(Long taskId, CommentDto commentDto, User user) {

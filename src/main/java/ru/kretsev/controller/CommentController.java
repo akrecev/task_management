@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,16 @@ import ru.kretsev.service.CommentService;
 @Tag(name = "Комментарии", description = "Методы для работы с комментариями")
 public class CommentController {
     private final CommentService commentService;
+
+    @Operation(summary = "Получить все комментарии к задаче (с пагинацией)")
+    @GetMapping("/task/{taskId}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<Page<CommentDto>> getCommentsByTaskId(
+            @PathVariable Long taskId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(commentService.getCommentsByTaskId(taskId, page, size));
+    }
 
     @Operation(summary = "Добавить комментарий к задаче")
     @PostMapping("/{taskId}")
