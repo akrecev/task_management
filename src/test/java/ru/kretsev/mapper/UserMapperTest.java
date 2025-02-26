@@ -8,6 +8,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.mapstruct.factory.Mappers;
 import ru.kretsev.dto.user.RegisterRequest;
 import ru.kretsev.dto.user.UserShortDto;
+import ru.kretsev.model.user.Role;
 import ru.kretsev.model.user.User;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -31,6 +32,26 @@ class UserMapperTest {
         assertEquals(registerRequest.lastname(), mappedUser.getLastname());
         assertEquals(registerRequest.email(), mappedUser.getEmail());
         assertEquals(registerRequest.password(), mappedUser.getPassword());
+        assertEquals(Role.USER, mappedUser.getRole());
+    }
+
+    @Test
+    @DisplayName("Должен корректно маппить registerRequest с ролью ADMIN в user")
+    void shouldMapRegisterRequestWithAdminRoleToUser() {
+        // given
+        RegisterRequest registerRequest =
+                new RegisterRequest("Admin", "Admin", "admin@example.com", "admin123", "ADMIN");
+
+        // when
+        User mappedUser = userMapper.toEntity(registerRequest);
+
+        // then
+        assertNotNull(mappedUser);
+        assertEquals(registerRequest.firstname(), mappedUser.getFirstname());
+        assertEquals(registerRequest.lastname(), mappedUser.getLastname());
+        assertEquals(registerRequest.email(), mappedUser.getEmail());
+        assertEquals(registerRequest.password(), mappedUser.getPassword());
+        assertEquals(Role.ADMIN, mappedUser.getRole());
     }
 
     @Test
