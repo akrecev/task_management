@@ -2,6 +2,7 @@ package ru.kretsev.auth;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static ru.kretsev.model.user.Role.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.kretsev.dto.user.AuthenticationRequest;
 import ru.kretsev.dto.user.AuthenticationResponse;
 import ru.kretsev.dto.user.RegisterRequest;
-import ru.kretsev.model.user.Role;
 import ru.kretsev.model.user.User;
 import ru.kretsev.repository.UserRepository;
 import ru.kretsev.service.impl.AuthenticationServiceImpl;
@@ -73,7 +73,7 @@ class AuthenticationServiceTest {
     @Test
     @DisplayName("Регистрация нового пользователя - успешный сценарий")
     void testRegister_Success() {
-        RegisterRequest request = new RegisterRequest("John", "Doe", EMAIL, PASSWORD, "USER");
+        RegisterRequest request = new RegisterRequest("John", "Doe", EMAIL, PASSWORD, ROLE_USER.name());
         User user = createTestUser();
 
         when(passwordEncoder.encode(request.password())).thenReturn(ENCODED_PASSWORD);
@@ -89,7 +89,7 @@ class AuthenticationServiceTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         User savedUser = userCaptor.getValue();
-        assertEquals("USER", savedUser.getRole().name());
+        assertEquals(ROLE_USER.name(), savedUser.getRole().name());
     }
 
     @Test
@@ -97,7 +97,7 @@ class AuthenticationServiceTest {
     void testAuthenticate_Success() {
         AuthenticationRequest request = new AuthenticationRequest(EMAIL, PASSWORD);
         User user = createTestUser();
-        user.setRole(Role.USER);
+        user.setRole(ROLE_USER);
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
         when(jwtService.generateToken(user)).thenReturn(MOCK_JWT_TOKEN);
@@ -116,14 +116,14 @@ class AuthenticationServiceTest {
     @DisplayName("Регистрация администратора - успешный сценарий")
     void testRegisterAdmin_Success() {
         RegisterRequest request =
-                new RegisterRequest("Admin", "Admin", "admin@example.com", "admin123", Role.ADMIN.name());
+                new RegisterRequest("Admin", "Admin", "admin@example.com", "admin123", ROLE_ADMIN.name());
         User admin = User.builder()
                 .id(2L)
                 .firstname("Admin")
                 .lastname("Admin")
                 .email("admin@example.com")
                 .password(ENCODED_PASSWORD)
-                .role(Role.ADMIN)
+                .role(ROLE_ADMIN)
                 .build();
 
         when(passwordEncoder.encode(request.password())).thenReturn(ENCODED_PASSWORD);
@@ -144,7 +144,7 @@ class AuthenticationServiceTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         User savedUser = userCaptor.getValue();
-        assertEquals(Role.ADMIN.name(), savedUser.getRole().name());
+        assertEquals(ROLE_ADMIN.name(), savedUser.getRole().name());
 
         SecurityContextHolder.clearContext();
     }

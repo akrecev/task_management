@@ -1,6 +1,8 @@
 package ru.kretsev.mapper;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.kretsev.model.user.Role.ROLE_ADMIN;
+import static ru.kretsev.model.user.Role.ROLE_USER;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,7 +10,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.mapstruct.factory.Mappers;
 import ru.kretsev.dto.user.RegisterRequest;
 import ru.kretsev.dto.user.UserShortDto;
-import ru.kretsev.model.user.Role;
 import ru.kretsev.model.user.User;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -21,7 +22,7 @@ class UserMapperTest {
     void shouldMapRegisterRequestToUser() {
         // given
         RegisterRequest registerRequest =
-                new RegisterRequest("Firstname", "Lastname", "test@test.com", "password", "USER");
+                new RegisterRequest("Firstname", "Lastname", "test@test.com", "password", ROLE_USER.name());
 
         // when
         User mappedUser = userMapper.toEntity(registerRequest);
@@ -32,7 +33,7 @@ class UserMapperTest {
         assertEquals(registerRequest.lastname(), mappedUser.getLastname());
         assertEquals(registerRequest.email(), mappedUser.getEmail());
         assertEquals(registerRequest.password(), mappedUser.getPassword());
-        assertEquals(Role.USER, mappedUser.getRole());
+        assertEquals(ROLE_USER, mappedUser.getRole());
     }
 
     @Test
@@ -40,7 +41,7 @@ class UserMapperTest {
     void shouldMapRegisterRequestWithAdminRoleToUser() {
         // given
         RegisterRequest registerRequest =
-                new RegisterRequest("Admin", "Admin", "admin@example.com", "admin123", "ADMIN");
+                new RegisterRequest("Admin", "Admin", "admin@example.com", "admin123", ROLE_ADMIN.name());
 
         // when
         User mappedUser = userMapper.toEntity(registerRequest);
@@ -51,7 +52,7 @@ class UserMapperTest {
         assertEquals(registerRequest.lastname(), mappedUser.getLastname());
         assertEquals(registerRequest.email(), mappedUser.getEmail());
         assertEquals(registerRequest.password(), mappedUser.getPassword());
-        assertEquals(Role.ADMIN, mappedUser.getRole());
+        assertEquals(ROLE_ADMIN, mappedUser.getRole());
     }
 
     @Test

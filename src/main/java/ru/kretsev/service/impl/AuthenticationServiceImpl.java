@@ -29,14 +29,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
-        var role = Role.USER;
+        var role = Role.ROLE_USER;
 
-        if (request.role() != null && request.role().equals(Role.ADMIN.name())) {
+        if (request.role() != null && request.role().equals(Role.ROLE_ADMIN.name())) {
             var authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null
                     && authentication.getAuthorities().stream()
                             .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                role = Role.ADMIN;
+                role = Role.ROLE_ADMIN;
             }
         }
 

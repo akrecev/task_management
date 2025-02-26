@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -17,6 +18,7 @@ import ru.kretsev.auth.JwtAuthenticationFilter;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity
 @SuppressWarnings("java:S4502")
 public class SecurityConfig {
 
@@ -31,9 +33,9 @@ public class SecurityConfig {
                                 "/token/**", "/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/webjars/**")
                         .permitAll()
                         .requestMatchers("/api/v1/tasks/**")
-                        .hasAnyAuthority(ADMIN.name(), USER.name())
+                        .hasAnyAuthority(ROLE_ADMIN.name(), ROLE_USER.name())
                         .requestMatchers("/api/v1/admin/**")
-                        .hasAuthority(ADMIN.name())
+                        .hasAuthority(ROLE_ADMIN.name())
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

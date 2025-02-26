@@ -31,13 +31,13 @@ public class FirstAdminInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userRepository.findByRole(Role.ADMIN).isEmpty()) {
+        if (userRepository.findByRole(Role.ROLE_ADMIN).isEmpty()) {
             User admin = User.builder()
                     .firstname(firstname)
                     .lastname(lastname)
                     .email(email)
                     .password(passwordEncoder.encode(password))
-                    .role(Role.ADMIN)
+                    .role(Role.ROLE_ADMIN)
                     .build();
             userRepository.save(admin);
             log.info("Создан первый администратор: admin@example.com");

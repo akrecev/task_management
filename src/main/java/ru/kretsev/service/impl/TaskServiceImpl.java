@@ -75,7 +75,7 @@ public class TaskServiceImpl implements TaskService {
     public TaskDto updateTask(Long taskId, TaskDto taskDto, User user) {
         Task task = taskRepository.findById(taskId).orElseThrow(throwTaskNotFound());
 
-        if (!task.getAuthor().equals(user) && !user.getRole().equals(Role.ADMIN)) {
+        if (!task.getAuthor().equals(user) && !user.getRole().equals(Role.ROLE_ADMIN)) {
             throw new AccessDeniedException("Нет прав для редактирования этой задачи");
         }
 
@@ -89,14 +89,22 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteTask(Long taskId) {
+        Task task = taskRepository.findById(taskId).orElseThrow(throwTaskNotFound());
+
+        String currentUserEmail = authenticationFacade.getCurrentUserEmail();
+        boolean isAdmin = authenticationFacade.getCurrentUserRoles().contains("ROLE_ADMIN");
+        if (!isAdmin && !task.getAuthor().getEmail().equals(currentUserEmail)) {
+            throw new AccessDeniedException("Вы можете удалить только свою задачу.");
+        }
+
         taskRepository.deleteById(taskId);
     }
 
     @Override
     public void deleteComment(Long commentId) {
-        String currentUserEmail = authenticationFacade.getCurrentUserEmail();
         Comment comment = commentRepository.findById(commentId).orElseThrow(throwTaskNotFound());
 
+        String currentUserEmail = authenticationFacade.getCurrentUserEmail();
         boolean isAdmin = authenticationFacade.getCurrentUserRoles().contains("ROLE_ADMIN");
         if (!isAdmin && !comment.getAuthor().getEmail().equals(currentUserEmail)) {
             throw new AccessDeniedException("Вы можете удалить только свои комментарии.");

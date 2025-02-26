@@ -33,7 +33,7 @@ class CommentMapperTest {
                 .lastname("Doe")
                 .email("john@example.com")
                 .password("securepass")
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .build();
 
         Task task = Task.builder()
@@ -57,7 +57,7 @@ class CommentMapperTest {
                 100L,
                 "This is a test comment",
                 new TaskShortDto(10L, "Test Task"),
-                new UserShortDto(1L, "John", "Doe", Role.USER.name()));
+                new UserShortDto(1L, "John", "Doe", Role.ROLE_USER.name()));
     }
 
     @Test

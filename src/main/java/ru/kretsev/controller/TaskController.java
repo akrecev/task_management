@@ -27,21 +27,20 @@ public class TaskController {
 
     @Operation(summary = "Создать задачу")
     @PostMapping
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<TaskDto> createTask(@RequestBody @Valid TaskDto taskDto, @AuthenticationPrincipal User user) {
         return ResponseEntity.ok(taskService.createTask(taskDto, user));
     }
 
     @Operation(summary = "Назначить задачу пользователю (только администратор)")
     @PutMapping("/{taskId}/assign/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TaskDto> assignTask(@PathVariable Long taskId, @PathVariable Long userId) {
         return ResponseEntity.ok(taskService.assignTask(taskId, userId));
     }
 
-    @Operation(summary = "Получить все задачи (с поддержкой пагинации)")
+    @Operation(summary = "Получить все задачи (только администратор, с поддержкой пагинации)")
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Page<TaskDto>> getAllTasks(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 
@@ -61,28 +60,25 @@ public class TaskController {
 
     @Operation(summary = "Получить список задач текущего пользователя")
     @GetMapping
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<TaskDto>> getUserTasks(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(taskService.getUserTasks(user));
     }
 
     @Operation(summary = "Обновить задачу")
     @PutMapping("/{taskId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<TaskDto> updateTask(
             @PathVariable Long taskId, @RequestBody @Valid TaskDto taskDto, @AuthenticationPrincipal User user) {
         return ResponseEntity.ok(taskService.updateTask(taskId, taskDto, user));
     }
 
-    @Operation(summary = "Удалить задачу (только администратор)")
+    @Operation(summary = "Удалить задачу (только администратор или владелец)")
     @DeleteMapping("/{taskId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
         taskService.deleteTask(taskId);
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Удаление комментария (пользователь может удалить свой, админ — любой)")
+    @Operation(summary = "Удаление комментария (только администратор или владелец)")
     @DeleteMapping("/{taskId}/comments/{commentId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Void> deleteComment(@PathVariable Long taskId, @PathVariable Long commentId) {
