@@ -1,4 +1,4 @@
-package ru.kretsev.auth;
+package ru.kretsev.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.kretsev.dto.user.AuthenticationRequest;
 import ru.kretsev.dto.user.AuthenticationResponse;
 import ru.kretsev.dto.user.RegisterRequest;
+import ru.kretsev.service.AuthenticationService;
 
 @RestController
 @RequestMapping("/api/v1/auth")

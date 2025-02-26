@@ -25,6 +25,7 @@ import ru.kretsev.dto.user.RegisterRequest;
 import ru.kretsev.model.user.Role;
 import ru.kretsev.model.user.User;
 import ru.kretsev.repository.UserRepository;
+import ru.kretsev.service.impl.AuthenticationServiceImpl;
 
 class AuthenticationServiceTest {
 
@@ -41,7 +42,7 @@ class AuthenticationServiceTest {
     private AuthenticationManager authenticationManager;
 
     @InjectMocks
-    private AuthenticationService authenticationService;
+    private AuthenticationServiceImpl authenticationService;
 
     private static final String MOCK_JWT_TOKEN = "mocked-jwt-token";
     private static final String EMAIL = "john@example.com";
