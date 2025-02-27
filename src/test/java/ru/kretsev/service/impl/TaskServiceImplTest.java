@@ -9,9 +9,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import ru.kretsev.dto.task.TaskDto;
 import ru.kretsev.mapper.TaskMapper;
 import ru.kretsev.model.task.Task;
+import ru.kretsev.model.user.Role;
 import ru.kretsev.model.user.User;
 import ru.kretsev.repository.TaskRepository;
 import ru.kretsev.repository.UserRepository;
@@ -102,5 +104,25 @@ class TaskServiceImplTest {
         assertNotNull(result, "Результат не должен быть null");
         assertEquals(taskId, result.id(), "ID задачи должно совпадать");
         assertEquals("Новая задача", result.title(), "Название задачи должно совпадать");
+    }
+
+    @Test
+    void updateTask_ShouldThrowAccessDeniedException() {
+        Long taskId = 1L;
+        TaskDto taskDto = new TaskDto(taskId, "Новая задача", "Описание", "PENDING", "HIGH", null, null, List.of());
+        User user =
+                User.builder().email("user@example.com").role(Role.ROLE_USER).build();
+
+        Task task = new Task();
+        task.setId(taskId);
+        task.setAuthor(new User().toBuilder().email("user2@example.com").build());
+
+        when(entityService.findEntityOrElseThrow(taskRepository, taskId, "Задача не найдена"))
+                .thenReturn(task);
+
+        assertThrows(
+                AccessDeniedException.class,
+                () -> taskService.updateTask(taskId, taskDto, user),
+                "Должно быть выброшено исключение AccessDeniedException");
     }
 }

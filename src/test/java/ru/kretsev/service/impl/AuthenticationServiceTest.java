@@ -1,4 +1,4 @@
-package ru.kretsev.auth;
+package ru.kretsev.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -20,12 +20,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import ru.kretsev.auth.JwtService;
 import ru.kretsev.dto.user.AuthenticationRequest;
 import ru.kretsev.dto.user.AuthenticationResponse;
 import ru.kretsev.dto.user.RegisterRequest;
 import ru.kretsev.model.user.User;
 import ru.kretsev.repository.UserRepository;
-import ru.kretsev.service.impl.AuthenticationServiceImpl;
 
 class AuthenticationServiceTest {
 
