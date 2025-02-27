@@ -1,8 +1,8 @@
 package ru.kretsev.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +17,9 @@ import ru.kretsev.model.user.User;
 import ru.kretsev.repository.CommentRepository;
 import ru.kretsev.repository.TaskRepository;
 import ru.kretsev.service.CommentService;
+import ru.kretsev.service.EntityService;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
@@ -25,6 +27,7 @@ public class CommentServiceImpl implements CommentService {
     private final TaskRepository taskRepository;
     private final CommentMapper commentMapper;
     private final AuthenticationFacade authenticationFacade;
+    private final EntityService entityService;
 
     @Override
     public Page<CommentDto> getCommentsByTaskId(Long taskId, int page, int size) {
@@ -35,20 +38,24 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto addComment(Long taskId, CommentDto commentDto, User user) {
-        Task task = taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Задача не найдена"));
+        log.info("Попытка добавления комментария к задаче: taskId={}, user={}", taskId, user.getEmail());
+
+        Task task = entityService.findEntityOrElseThrow(taskRepository, taskId, "Задача не найдена");
 
         Comment comment = commentMapper.toEntity(commentDto);
         comment.setTask(task);
         comment.setAuthor(user);
         commentRepository.save(comment);
+
+        log.info("Комментарий успешно добавлен: id={}, taskId={}", comment.getId(), taskId);
         return commentMapper.toDto(comment);
     }
 
     @Override
     public void deleteComment(Long commentId) {
-        var comment = commentRepository
-                .findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("Комментарий не найден"));
+        log.info("Попытка удаления комментария: id={}", commentId);
+
+        Comment comment = entityService.findEntityOrElseThrow(commentRepository, commentId, "Комментарий не найден");
 
         String currentUserEmail = authenticationFacade.getCurrentUserEmail();
         List<String> currentUserRoles = authenticationFacade.getCurrentUserRoles();
@@ -58,7 +65,9 @@ public class CommentServiceImpl implements CommentService {
 
         if (isAdmin || isAuthor) {
             commentRepository.delete(comment);
+            log.info("Комментарий успешно удален: id={}", commentId);
         } else {
+            log.warn("Попытка удаления комментария без прав: commentId={}, user={}", commentId, currentUserEmail);
             throw new AccessDeniedException("Вы не можете удалить этот комментарий");
         }
     }

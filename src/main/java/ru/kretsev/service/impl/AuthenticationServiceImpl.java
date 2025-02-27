@@ -54,8 +54,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
 
         var jwtToken = jwtService.generateToken(user);
-        log.info("Пользователь успешно зарегистрирован: email={}", request.email());
 
+        log.info("Пользователь успешно зарегистрирован: email={}", request.email());
         return new AuthenticationResponse(jwtToken);
     }
 
@@ -66,16 +66,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
-        var user = userRepository
-                .findByEmail(request.email())
-                .orElseThrow(() -> {
-                    log.error("Пользователь с email={} не найден", request.email());
-                    return new UsernameNotFoundException("User not found");
-                });
+        var user = userRepository.findByEmail(request.email()).orElseThrow(() -> {
+            log.error("Пользователь с email={} не найден", request.email());
+            return new UsernameNotFoundException("User not found");
+        });
 
         var jwtToken = jwtService.generateToken(user);
-        log.info("Пользователь успешно аутентифицирован: email={}", request.email());
 
+        log.info("Пользователь успешно аутентифицирован: email={}", request.email());
         return new AuthenticationResponse(jwtToken);
     }
 

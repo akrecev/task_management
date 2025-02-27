@@ -1,9 +1,8 @@
 package ru.kretsev.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +20,10 @@ import ru.kretsev.model.user.User;
 import ru.kretsev.repository.CommentRepository;
 import ru.kretsev.repository.TaskRepository;
 import ru.kretsev.repository.UserRepository;
+import ru.kretsev.service.EntityService;
 import ru.kretsev.service.TaskService;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
@@ -31,38 +32,49 @@ public class TaskServiceImpl implements TaskService {
     private final UserRepository userRepository;
     private final TaskMapper taskMapper;
     private final AuthenticationFacade authenticationFacade;
+    private final EntityService entityService;
 
     @Override
     public TaskDto createTask(TaskDto taskDto, User user) {
+        log.info("Попытка создания задачи: title={}, author={}", taskDto.title(), user.getEmail());
+
         Task task = taskMapper.toEntity(taskDto);
         task.setAuthor(user);
         task.setStatus(TaskStatus.PENDING);
         taskRepository.save(task);
+
+        log.info("Задача успешно создана: id={}, title={}", task.getId(), task.getTitle());
         return taskMapper.toDto(task);
     }
 
     @Override
     public TaskDto assignTask(Long taskId, Long userId) {
-        Task task = taskRepository.findById(taskId).orElseThrow(throwTaskNotFound());
+        log.info("Попытка назначения задачи пользователю задачи: id={}, userId={}", taskId, userId);
 
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
-
+        Task task = takeTask(taskId);
+        User user = entityService.findEntityOrElseThrow(userRepository, userId, "Пользователь не найден");
         task.setAssignee(user);
         taskRepository.save(task);
+
+        log.info(
+                "Задача успешно назначена пользователю: id={}, title={}, assignee={}",
+                task.getId(),
+                task.getTitle(),
+                user.getEmail());
         return taskMapper.toDto(task);
     }
 
     @Override
     public Page<TaskDto> getAllTasks(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
+
         return taskRepository.findAll(pageable).map(taskMapper::toDto);
     }
 
     @Override
     public TaskDto getTask(Long taskId) {
-        Task task = taskRepository.findById(taskId).orElseThrow(throwTaskNotFound());
+        Task task = takeTask(taskId);
+
         return taskMapper.toDto(task);
     }
 
@@ -73,9 +85,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDto updateTask(Long taskId, TaskDto taskDto, User user) {
-        Task task = taskRepository.findById(taskId).orElseThrow(throwTaskNotFound());
+        log.info("Попытка обновления задачи: id={}, user={}", taskId, user.getEmail());
+
+        Task task = takeTask(taskId);
 
         if (!task.getAuthor().equals(user) && !user.getRole().equals(Role.ROLE_ADMIN)) {
+            log.warn("Попытка обновления задачи без прав: taskId={}, user={}", taskId, user.getEmail());
             throw new AccessDeniedException("Нет прав для редактирования этой задачи");
         }
 
@@ -84,16 +99,20 @@ public class TaskServiceImpl implements TaskService {
         task.setStatus(TaskStatus.valueOf(taskDto.status()));
         task.setPriority(Priority.valueOf(taskDto.priority()));
         taskRepository.save(task);
+
+        log.info("Задача успешно обновлена: id={}, title={}", taskId, task.getTitle());
         return taskMapper.toDto(task);
     }
 
     @Override
     public void deleteTask(Long taskId) {
-        Task task = taskRepository.findById(taskId).orElseThrow(throwTaskNotFound());
+        log.info("Попытка удаления задачи: id={}", taskId);
 
+        Task task = takeTask(taskId);
         String currentUserEmail = authenticationFacade.getCurrentUserEmail();
         boolean isAdmin = authenticationFacade.getCurrentUserRoles().contains("ROLE_ADMIN");
         if (!isAdmin && !task.getAuthor().getEmail().equals(currentUserEmail)) {
+            log.warn("Попытка удаления задачи без прав: taskId={}, user={}", taskId, currentUserEmail);
             throw new AccessDeniedException("Вы можете удалить только свою задачу.");
         }
 
@@ -102,18 +121,19 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void deleteComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(throwTaskNotFound());
+        Comment comment = entityService.findEntityOrElseThrow(commentRepository, commentId, "Комментарий не найден");
 
         String currentUserEmail = authenticationFacade.getCurrentUserEmail();
         boolean isAdmin = authenticationFacade.getCurrentUserRoles().contains("ROLE_ADMIN");
         if (!isAdmin && !comment.getAuthor().getEmail().equals(currentUserEmail)) {
+            log.warn("Попытка удаления комментария без прав: commentId={}, user={}", commentId, currentUserEmail);
             throw new AccessDeniedException("Вы можете удалить только свои комментарии.");
         }
 
         commentRepository.delete(comment);
     }
 
-    private static Supplier<EntityNotFoundException> throwTaskNotFound() {
-        return () -> new EntityNotFoundException("Задача не найдена");
+    private Task takeTask(Long taskId) {
+        return entityService.findEntityOrElseThrow(taskRepository, taskId, "Задача не найдена");
     }
 }
