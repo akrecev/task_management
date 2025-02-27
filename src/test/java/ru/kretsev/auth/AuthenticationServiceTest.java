@@ -72,7 +72,7 @@ class AuthenticationServiceTest {
 
     @Test
     @DisplayName("Регистрация нового пользователя - успешный сценарий")
-    void testRegister_Success() {
+    void testRegisterSuccess() {
         RegisterRequest request = new RegisterRequest("John", "Doe", EMAIL, PASSWORD, ROLE_USER.name());
         User user = createTestUser();
 
@@ -94,7 +94,7 @@ class AuthenticationServiceTest {
 
     @Test
     @DisplayName("Аутентификация пользователя - успешный вход")
-    void testAuthenticate_Success() {
+    void testAuthenticateSuccess() {
         AuthenticationRequest request = new AuthenticationRequest(EMAIL, PASSWORD);
         User user = createTestUser();
         user.setRole(ROLE_USER);
@@ -114,7 +114,7 @@ class AuthenticationServiceTest {
 
     @Test
     @DisplayName("Регистрация администратора - успешный сценарий")
-    void testRegisterAdmin_Success() {
+    void testRegisterAdminSuccess() {
         RegisterRequest request =
                 new RegisterRequest("Admin", "Admin", "admin@example.com", "admin123", ROLE_ADMIN.name());
         User admin = User.builder()
@@ -151,7 +151,7 @@ class AuthenticationServiceTest {
 
     @Test
     @DisplayName("Аутентификация - ошибка при неверном пароле")
-    void testAuthenticate_Failed_WrongPassword() {
+    void testAuthenticateFailedWrongPassword() {
         AuthenticationRequest request = new AuthenticationRequest(EMAIL, "wrongpassword");
         User user = createTestUser();
 

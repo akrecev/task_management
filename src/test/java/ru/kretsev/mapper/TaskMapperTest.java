@@ -77,10 +77,8 @@ class TaskMapperTest {
     @Test
     @DisplayName("Должен корректно маппить Task в TaskDto")
     void shouldMapTaskToTaskDto() {
-        // when
         TaskDto mappedDto = taskMapper.toDto(task);
 
-        // then
         assertNotNull(mappedDto);
         assertEquals(task.getId(), mappedDto.id());
         assertEquals(task.getTitle(), mappedDto.title());
@@ -90,10 +88,8 @@ class TaskMapperTest {
     @Test
     @DisplayName("Должен корректно маппить TaskDto в Task")
     void shouldMapTaskDtoToTask() {
-        // when
         Task mappedTask = taskMapper.toEntity(taskDto);
 
-        // then
         assertNotNull(mappedTask);
         assertEquals(taskDto.id(), mappedTask.getId());
         assertEquals(taskDto.title(), mappedTask.getTitle());
@@ -103,10 +99,8 @@ class TaskMapperTest {
     @Test
     @DisplayName("Должен корректно маппить Task в TaskShortDto")
     void shouldMapTaskToTaskShortDto() {
-        // when
         TaskShortDto taskShortDto = taskMapper.toShortDto(task);
 
-        // then
         assertNotNull(taskShortDto);
         assertEquals(task.getId(), taskShortDto.id(), "ID должен совпадать");
         assertEquals(task.getTitle(), taskShortDto.title(), "Название задачи должно совпадать");

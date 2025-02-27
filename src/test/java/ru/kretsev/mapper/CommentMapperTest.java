@@ -63,10 +63,8 @@ class CommentMapperTest {
     @Test
     @DisplayName("Должен корректно маппить Comment в CommentDto")
     void shouldMapCommentToCommentDto() {
-        // when
         CommentDto mappedDto = commentMapper.toDto(comment);
 
-        // then
         assertNotNull(mappedDto, "Маппинг не должен вернуть null");
         assertEquals(comment.getId(), mappedDto.id(), "ID должен совпадать");
         assertEquals(comment.getContent(), mappedDto.content(), "Содержимое должно совпадать");
@@ -87,19 +85,15 @@ class CommentMapperTest {
     @Test
     @DisplayName("Должен корректно маппить CommentDto в Comment")
     void shouldMapCommentDtoToComment() {
-        // when
         Comment mappedComment = commentMapper.toEntity(commentDto);
 
-        // then
         assertNotNull(mappedComment, "Маппинг не должен вернуть null");
         assertEquals(commentDto.id(), mappedComment.getId(), "ID должен совпадать");
         assertEquals(commentDto.content(), mappedComment.getContent(), "Содержимое должно совпадать");
 
-        // Проверяем Task (но тут важен только ID, так как TaskShortDto -> Task)
         assertNotNull(mappedComment.getTask(), "Task не должен быть null");
         assertEquals(commentDto.taskShortDto().id(), mappedComment.getTask().getId(), "ID задачи должен совпадать");
 
-        // Проверяем User (UserShortDto -> User)
         assertNotNull(mappedComment.getAuthor(), "Author не должен быть null");
         assertEquals(commentDto.userShortDto().id(), mappedComment.getAuthor().getId(), "ID автора должен совпадать");
     }

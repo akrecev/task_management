@@ -20,14 +20,11 @@ class UserMapperTest {
     @Test
     @DisplayName("Должен корректно маппить registerRequest в user")
     void shouldMapRegisterRequestToUser() {
-        // given
         RegisterRequest registerRequest =
                 new RegisterRequest("Firstname", "Lastname", "test@test.com", "password", ROLE_USER.name());
 
-        // when
         User mappedUser = userMapper.toEntity(registerRequest);
 
-        // then
         assertNotNull(mappedUser);
         assertEquals(registerRequest.firstname(), mappedUser.getFirstname());
         assertEquals(registerRequest.lastname(), mappedUser.getLastname());
@@ -39,14 +36,11 @@ class UserMapperTest {
     @Test
     @DisplayName("Должен корректно маппить registerRequest с ролью ADMIN в user")
     void shouldMapRegisterRequestWithAdminRoleToUser() {
-        // given
         RegisterRequest registerRequest =
                 new RegisterRequest("Admin", "Admin", "admin@example.com", "admin123", ROLE_ADMIN.name());
 
-        // when
         User mappedUser = userMapper.toEntity(registerRequest);
 
-        // then
         assertNotNull(mappedUser);
         assertEquals(registerRequest.firstname(), mappedUser.getFirstname());
         assertEquals(registerRequest.lastname(), mappedUser.getLastname());
@@ -58,7 +52,6 @@ class UserMapperTest {
     @Test
     @DisplayName("Должен корректно маппить user в userShortDto")
     void shouldMapUserToUserShortDto() {
-        // given
         User user = User.builder()
                 .id(100500L)
                 .firstname("Firstname")
@@ -67,10 +60,8 @@ class UserMapperTest {
                 .password("password")
                 .build();
 
-        // when
         UserShortDto userShortDto = userMapper.toShortDto(user);
 
-        // then
         assertNotNull(userShortDto);
         assertEquals(user.getId(), userShortDto.id());
         assertEquals(user.getFirstname(), userShortDto.firstname());
