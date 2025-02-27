@@ -3,6 +3,8 @@ package ru.kretsev.service.impl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,13 +32,6 @@ public class CommentServiceImpl implements CommentService {
     private final EntityService entityService;
 
     @Override
-    public Page<CommentDto> getCommentsByTaskId(Long taskId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Comment> commentsPage = commentRepository.findByTaskId(taskId, pageable);
-        return commentsPage.map(commentMapper::toDto);
-    }
-
-    @Override
     public CommentDto addComment(Long taskId, CommentDto commentDto, User user) {
         log.info("Попытка добавления комментария к задаче: taskId={}, user={}", taskId, user.getEmail());
 
@@ -52,8 +47,24 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Cacheable(value = "comments", key = "#commentId")
+    public CommentDto getCommentById(Long commentId) {
+        log.info("Комментарий с id={} не найден в кэше, выполняется запрос к базе данных", commentId);
+        Comment comment = entityService.findEntityOrElseThrow(commentRepository, commentId, "Комментарий не найден");
+        return commentMapper.toDto(comment);
+    }
+
+    @Override
+    public Page<CommentDto> getCommentsByTaskId(Long taskId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comment> commentsPage = commentRepository.findByTaskId(taskId, pageable);
+        return commentsPage.map(commentMapper::toDto);
+    }
+
+    @Override
+    @CacheEvict(value = "comments", key = "#commentId")
     public void deleteComment(Long commentId) {
-        log.info("Попытка удаления комментария: id={}", commentId);
+        log.info("Удаление комментария с id={} и удаление из кэша", commentId);
 
         Comment comment = entityService.findEntityOrElseThrow(commentRepository, commentId, "Комментарий не найден");
 

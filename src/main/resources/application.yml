@@ -24,6 +24,10 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=500, expireAfterAccess=10m
 
 jwt:
   secret: ${JWT_SECRET_KEY}

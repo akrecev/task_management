@@ -3,6 +3,9 @@ package ru.kretsev.service.impl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -72,7 +75,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Cacheable(value = "tasks", key = "#taskId")
     public TaskDto getTask(Long taskId) {
+        log.info("Задача с id={} не найдена в кэше, выполняется запрос к базе данных", taskId);
         Task task = takeTask(taskId);
 
         return taskMapper.toDto(task);
@@ -84,8 +89,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @CachePut(value = "tasks", key = "#taskId")
     public TaskDto updateTask(Long taskId, TaskDto taskDto, User user) {
-        log.info("Попытка обновления задачи: id={}, user={}", taskId, user.getEmail());
+        log.info("Обновление задачи: id={}, user={}, обновление кэша", taskId, user.getEmail());
 
         Task task = takeTask(taskId);
 
@@ -105,8 +111,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @CacheEvict(value = "tasks", key = "#taskId")
     public void deleteTask(Long taskId) {
-        log.info("Попытка удаления задачи: id={}", taskId);
+        log.info("Удаление задачи с id={} и удаление из кэша", taskId);
 
         Task task = takeTask(taskId);
         String currentUserEmail = authenticationFacade.getCurrentUserEmail();
@@ -120,7 +127,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @CacheEvict(value = "comments", key = "#commentId")
     public void deleteComment(Long commentId) {
+        log.info("Удаление комментария с id={} и удаление из кэша", commentId);
         Comment comment = entityService.findEntityOrElseThrow(commentRepository, commentId, "Комментарий не найден");
 
         String currentUserEmail = authenticationFacade.getCurrentUserEmail();

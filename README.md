@@ -67,6 +67,8 @@
    INIT_ADMIN_LASTNAME=Admin  
    INIT_ADMIN_EMAIL=admin@example.com  
    INIT_ADMIN_PASSWORD=admin123
+   LOG_PATH=logs
+   LOG_FILE=application.log
    ```
 3. **Запустите проект с помощью Docker Compose:**:
    ```bash

@@ -20,6 +20,21 @@ import ru.kretsev.service.CommentService;
 public class CommentController {
     private final CommentService commentService;
 
+    @Operation(summary = "Добавить комментарий к задаче")
+    @PostMapping("/{taskId}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<CommentDto> addComment(
+            @PathVariable Long taskId, @RequestBody @Valid CommentDto commentDto, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(commentService.addComment(taskId, commentDto, user));
+    }
+
+    @Operation(summary = "Получить комментарий по id")
+    @GetMapping("/{commentId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CommentDto> getCommentsByTaskId(@PathVariable Long commentId) {
+        return ResponseEntity.ok(commentService.getCommentById(commentId));
+    }
+
     @Operation(summary = "Получить все комментарии к задаче (с пагинацией)")
     @GetMapping("/task/{taskId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -28,14 +43,6 @@ public class CommentController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(commentService.getCommentsByTaskId(taskId, page, size));
-    }
-
-    @Operation(summary = "Добавить комментарий к задаче")
-    @PostMapping("/{taskId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<CommentDto> addComment(
-            @PathVariable Long taskId, @RequestBody @Valid CommentDto commentDto, @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(commentService.addComment(taskId, commentDto, user));
     }
 
     @Operation(summary = "Удалить комментарий (только если это свой комментарий или админ)")
