@@ -1,17 +1,18 @@
 package ru.kretsev.model.token;
 
 import jakarta.persistence.*;
+import java.util.Objects;
 import lombok.*;
 import ru.kretsev.model.user.User;
 
-@Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "tokens")
 public class Token {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,4 +32,16 @@ public class Token {
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     private User user;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Token token)) return false;
+        return Objects.equals(tokenValue, token.tokenValue);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tokenValue);
+    }
 }

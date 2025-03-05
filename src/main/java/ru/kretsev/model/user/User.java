@@ -4,16 +4,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.kretsev.model.token.Token;
 
-@Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
@@ -76,8 +78,25 @@ public class User implements UserDetails {
         return true;
     }
 
-    @ToString.Include(name = "password")
-    private String maskPassword() {
-        return "********";
+    @Override
+    public String toString() {
+        return "User{" + "id="
+                + id + ", firstname='"
+                + firstname + '\'' + ", lastname='"
+                + lastname + '\'' + ", email='"
+                + email + '\'' + ", role="
+                + role + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
     }
 }

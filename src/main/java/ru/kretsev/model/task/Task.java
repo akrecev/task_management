@@ -2,17 +2,16 @@ package ru.kretsev.model.task;
 
 import jakarta.persistence.*;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.Objects;
+import lombok.*;
 import ru.kretsev.model.comment.Comment;
 import ru.kretsev.model.user.User;
 
-@Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "tasks")
 public class Task {
@@ -42,4 +41,26 @@ public class Task {
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    @Override
+    public String toString() {
+        return "Task{" + "id="
+                + id + ", title='"
+                + title + '\'' + ", description='"
+                + description + '\'' + ", status="
+                + status + ", priority="
+                + priority + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Task task)) return false;
+        return Objects.equals(title, task.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title);
+    }
 }

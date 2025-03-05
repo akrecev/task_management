@@ -1,17 +1,16 @@
 package ru.kretsev.model.comment;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.Objects;
+import lombok.*;
 import ru.kretsev.model.task.Task;
 import ru.kretsev.model.user.User;
 
-@Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "comments")
 public class Comment {
@@ -29,4 +28,21 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
+
+    @Override
+    public String toString() {
+        return "Comment{" + "id=" + id + ", content='" + content + '\'' + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Comment comment)) return false;
+        return Objects.equals(content, comment.content);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(content);
+    }
 }
