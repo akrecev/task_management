@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kretsev.auth.AuthenticationFacade;
 import ru.kretsev.dto.task.TaskDto;
 import ru.kretsev.mapper.TaskMapper;
@@ -26,9 +27,13 @@ import ru.kretsev.repository.UserRepository;
 import ru.kretsev.service.EntityService;
 import ru.kretsev.service.TaskService;
 
+/**
+ * Implementation of the TaskService for managing tasks.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final CommentRepository commentRepository;
@@ -38,6 +43,7 @@ public class TaskServiceImpl implements TaskService {
     private final EntityService entityService;
 
     @Override
+    @Transactional
     public TaskDto createTask(TaskDto taskDto, User user) {
         log.info("Попытка создания задачи: title={}, author={}", taskDto.title(), user.getEmail());
 
@@ -51,6 +57,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public TaskDto assignTask(Long taskId, Long userId) {
         log.info("Попытка назначения задачи пользователю задачи: id={}, userId={}", taskId, userId);
 
@@ -90,6 +97,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @CachePut(value = "tasks", key = "#taskId")
+    @Transactional
     public TaskDto updateTask(Long taskId, TaskDto taskDto, User user) {
         log.info("Обновление задачи: id={}, user={}, обновление кэша", taskId, user.getEmail());
 
@@ -112,6 +120,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @CacheEvict(value = "tasks", key = "#taskId")
+    @Transactional
     public void deleteTask(Long taskId) {
         log.info("Удаление задачи с id={} и удаление из кэша", taskId);
 
@@ -128,6 +137,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @CacheEvict(value = "comments", key = "#commentId")
+    @Transactional
     public void deleteComment(Long commentId) {
         log.info("Удаление комментария с id={} и удаление из кэша", commentId);
         Comment comment = entityService.findEntityOrElseThrow(commentRepository, commentId, "Комментарий не найден");

@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kretsev.auth.JwtService;
 import ru.kretsev.dto.user.AuthenticationRequest;
 import ru.kretsev.dto.user.AuthenticationResponse;
@@ -19,9 +20,13 @@ import ru.kretsev.model.user.User;
 import ru.kretsev.repository.UserRepository;
 import ru.kretsev.service.AuthenticationService;
 
+/**
+ * Implementation of the AuthenticationService for user registration and authentication.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -30,6 +35,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserMapper userMapper;
 
     @Override
+    @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
         log.info("Попытка регистрации пользователя: email={}", request.email());
 

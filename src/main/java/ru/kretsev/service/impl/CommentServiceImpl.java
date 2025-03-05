@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kretsev.auth.AuthenticationFacade;
 import ru.kretsev.dto.comment.CommentDto;
 import ru.kretsev.mapper.CommentMapper;
@@ -21,9 +22,13 @@ import ru.kretsev.repository.TaskRepository;
 import ru.kretsev.service.CommentService;
 import ru.kretsev.service.EntityService;
 
+/**
+ * Implementation of the CommentService for managing comments.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final TaskRepository taskRepository;
@@ -32,6 +37,7 @@ public class CommentServiceImpl implements CommentService {
     private final EntityService entityService;
 
     @Override
+    @Transactional
     public CommentDto addComment(Long taskId, CommentDto commentDto, User user) {
         log.info("Попытка добавления комментария к задаче: taskId={}, user={}", taskId, user.getEmail());
 
@@ -63,6 +69,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @CacheEvict(value = "comments", key = "#commentId")
+    @Transactional
     public void deleteComment(Long commentId) {
         log.info("Удаление комментария с id={} и удаление из кэша", commentId);
 
