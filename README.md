@@ -41,12 +41,54 @@
 - **Логирование**: SLF4J с Logback
 - **Тестирование**: JUnit, Mockito (для модульных тестов)
 
+## Структура проекта
+
+taskmanagement/  
+├── src/  
+│   ├── main/  
+│   │   ├── java/  
+│   │   │   └── ru/kretsev/  
+│   │   │       ├── auth/  
+│   │   │       ├── config/  
+│   │   │       ├── controller/  
+│   │   │       ├── dto/  
+│   │   │       │   ├── comment/  
+│   │   │       │   ├── task/  
+│   │   │       │   └── user/  
+│   │   │       ├── exception/  
+│   │   │       ├── mapper/  
+│   │   │       ├── model/  
+│   │   │       │   ├── comment/  
+│   │   │       │   ├── task/  
+│   │   │       │   ├── token/  
+│   │   │       │   └── user/  
+│   │   │       ├── repository/  
+│   │   │       ├── service/  
+│   │   │       │   └── impl/  
+│   │   │       └── TaskManagementApp.java  
+│   │   └── resources/  
+│   │       ├── db/migration/  
+│   │       ├── application.yml  
+│   │       └── .env  
+│   └── test/  
+│       └── java/  
+│           └── ru/kretsev/  
+│               ├── mapper/  
+│               └── service/impl/  
+├── Dockerfile  
+├── docker-compose.yaml  
+├── build.gradle.kts  
+├── gradle.properties  
+├── settings.gradle.kts  
+└── README.md  
+
+
 ## Локальный запуск проекта
 
 ### Предварительные требования
 
 1. Установите [Docker](https://docs.docker.com/get-docker/) и [Docker Compose](https://docs.docker.com/compose/install/).
-2. Установите [Java 17](https://openjdk.org/projects/jdk/17/).
+2. Установите [Java 21](https://openjdk.org/projects/jdk/21/).
 3. Установите [Maven](https://maven.apache.org/install.html).
 
 ### Шаги для запуска
