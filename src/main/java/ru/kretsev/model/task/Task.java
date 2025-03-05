@@ -7,11 +7,14 @@ import lombok.*;
 import ru.kretsev.model.comment.Comment;
 import ru.kretsev.model.user.User;
 
-@Builder(toBuilder = true)
+/**
+ * Entity representing a task in the system.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "tasks")
 public class Task {

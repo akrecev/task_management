@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import ru.kretsev.service.EntityService;
 
+/**
+ * Implementation of the EntityService for common entity operations.
+ */
 @Slf4j
 @Service
 public class EntityServiceImpl implements EntityService {

@@ -5,11 +5,14 @@ import java.util.Objects;
 import lombok.*;
 import ru.kretsev.model.user.User;
 
-@Builder(toBuilder = true)
+/**
+ * Entity representing a JWT token associated with a user.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "tokens")
 public class Token {

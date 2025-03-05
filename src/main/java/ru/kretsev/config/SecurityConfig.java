@@ -2,6 +2,7 @@ package ru.kretsev.config;
 
 import static ru.kretsev.model.user.Role.*;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,8 +17,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import ru.kretsev.auth.JwtAuthenticationFilter;
 
-import java.util.List;
-
+/**
+ * Configuration class for Spring Security settings including CORS and authentication.
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -28,6 +30,13 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
+    /**
+     * Configures the security filter chain with CORS, JWT authentication, and authorization rules.
+     *
+     * @param httpSecurity the HTTP security configuration
+     * @return the configured {@link SecurityFilterChain}
+     * @throws Exception if configuration fails
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -35,7 +44,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOrigins(List.of("http://localhost:3000")); // Adjust for production
-                    config.setAllowedMethods(List.of("GET", "POST", "PATCH","PUT", "DELETE"));
+                    config.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
                     return config;

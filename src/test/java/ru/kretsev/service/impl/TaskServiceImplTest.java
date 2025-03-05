@@ -19,6 +19,9 @@ import ru.kretsev.repository.TaskRepository;
 import ru.kretsev.repository.UserRepository;
 import ru.kretsev.service.EntityService;
 
+/**
+ * Unit tests for the TaskServiceImpl.
+ */
 @ExtendWith(MockitoExtension.class)
 class TaskServiceImplTest {
     @Mock

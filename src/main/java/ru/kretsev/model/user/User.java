@@ -11,11 +11,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.kretsev.model.token.Token;
 
-@Builder(toBuilder = true)
+/**
+ * Entity representing a user in the system, implementing Spring Security's UserDetails.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {

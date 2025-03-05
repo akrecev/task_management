@@ -8,10 +8,18 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration class for enabling and setting up caching.
+ */
 @Configuration
 @EnableCaching
 public class CacheConfig {
 
+    /**
+     * Configures the cache manager with Caffeine settings.
+     *
+     * @return the {@link CacheManager} instance
+     */
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager("tasks", "comments");

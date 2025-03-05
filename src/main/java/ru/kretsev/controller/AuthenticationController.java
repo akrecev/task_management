@@ -16,6 +16,9 @@ import ru.kretsev.dto.user.RegisterRequest;
 import ru.kretsev.dto.user.UserShortDto;
 import ru.kretsev.service.AuthenticationService;
 
+/**
+ * REST controller for handling user authentication and registration.
+ */
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -23,6 +26,12 @@ import ru.kretsev.service.AuthenticationService;
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
+    /**
+     * Registers a new user in the system.
+     *
+     * @param request the registration request containing user details
+     * @return the authentication response with a JWT token
+     */
     @Operation(summary = "Регистрация нового пользователя", description = "Создаёт нового пользователя в системе")
     @ApiResponses(
             value = {
@@ -34,6 +43,12 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
+    /**
+     * Authenticates a user and returns a JWT token.
+     *
+     * @param request the authentication request containing email and password
+     * @return the authentication response with a JWT token
+     */
     @Operation(summary = "Аутентификация пользователя", description = "Возвращает JWT-токен при успешной авторизации")
     @ApiResponses(
             value = {
@@ -45,6 +60,12 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
+    /**
+     * Retrieves information about the currently authenticated user.
+     *
+     * @param authentication the current authentication object
+     * @return the short user DTO
+     */
     @Operation(summary = "Получение информации о текущем пользователе")
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")

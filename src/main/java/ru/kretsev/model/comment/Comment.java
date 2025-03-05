@@ -6,11 +6,14 @@ import lombok.*;
 import ru.kretsev.model.task.Task;
 import ru.kretsev.model.user.User;
 
-@Builder(toBuilder = true)
+/**
+ * Entity representing a comment on a task.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "comments")
 public class Comment {

@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service for handling JWT token generation, validation, and extraction of claims.
+ */
 @Service
 public class JwtService {
 
@@ -22,20 +25,47 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private Integer expirationInSeconds;
 
+    /**
+     * Extracts the username (email) from the JWT token.
+     *
+     * @param token the JWT token
+     * @return the username, or null if token is invalid
+     */
     public String getUsername(String token) {
         return getClaim(token, Claims::getSubject);
     }
 
+    /**
+     * Extracts a specific claim from the JWT token.
+     *
+     * @param token the JWT token
+     * @param claimsResolver the function to extract the claim
+     * @param <T> the type of the claim
+     * @return the extracted claim value
+     */
     public <T> T getClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
 
         return claimsResolver.apply(claims);
     }
 
+    /**
+     * Generates a JWT token for the given user details.
+     *
+     * @param userDetails the user details
+     * @return the generated JWT token
+     */
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
+    /**
+     * Generates a JWT token with additional claims for the given user details.
+     *
+     * @param extraClaims additional claims to include in the token
+     * @param userDetails the user details
+     * @return the generated JWT token
+     */
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
                 .claims(extraClaims)
@@ -46,11 +76,24 @@ public class JwtService {
                 .compact();
     }
 
+    /**
+     * Validates the JWT token against the user details.
+     *
+     * @param token the JWT token
+     * @param userDetails the user details
+     * @return true if the token is valid, false otherwise
+     */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = getUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    /**
+     * Checks if the JWT token has expired.
+     *
+     * @param token the JWT token
+     * @return true if the token is expired, false otherwise
+     */
     public boolean isTokenExpired(String token) {
         return getExpiration(token).before(new Date());
     }

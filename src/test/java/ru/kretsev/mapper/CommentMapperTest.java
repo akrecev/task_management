@@ -17,6 +17,9 @@ import ru.kretsev.model.task.TaskStatus;
 import ru.kretsev.model.user.Role;
 import ru.kretsev.model.user.User;
 
+/**
+ * Unit tests for the CommentMapper.
+ */
 @SpringBootTest
 class CommentMapperTest {
     @Autowired

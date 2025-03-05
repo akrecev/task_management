@@ -12,6 +12,9 @@ import ru.kretsev.dto.user.RegisterRequest;
 import ru.kretsev.dto.user.UserShortDto;
 import ru.kretsev.model.user.User;
 
+/**
+ * Unit tests for the UserMapper.
+ */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserMapperTest {
 

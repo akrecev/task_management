@@ -6,14 +6,13 @@ import static ru.kretsev.model.user.Role.*;
 
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,6 +26,10 @@ import ru.kretsev.dto.user.RegisterRequest;
 import ru.kretsev.model.user.User;
 import ru.kretsev.repository.UserRepository;
 
+/**
+ * Unit tests for the AuthenticationServiceImpl.
+ */
+@ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {
 
     @Mock
@@ -48,17 +51,6 @@ class AuthenticationServiceTest {
     private static final String EMAIL = "john@example.com";
     private static final String PASSWORD = "password123";
     private static final String ENCODED_PASSWORD = "encodedPassword";
-    private AutoCloseable mocks;
-
-    @BeforeEach
-    void setUp() {
-        mocks = MockitoAnnotations.openMocks(this);
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        mocks.close();
-    }
 
     private User createTestUser() {
         return User.builder()
@@ -153,9 +145,7 @@ class AuthenticationServiceTest {
     @DisplayName("Аутентификация - ошибка при неверном пароле")
     void testAuthenticateFailedWrongPassword() {
         AuthenticationRequest request = new AuthenticationRequest(EMAIL, "wrongpassword");
-        User user = createTestUser();
 
-        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new RuntimeException("Invalid credentials"));
 

@@ -5,6 +5,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Data Transfer Object for user registration request.
+ *
+ * @param firstname the user's first name
+ * @param lastname the user's last name
+ * @param email the user's email
+ * @param password the user's password
+ * @param role the user's role ("USER" or "ADMIN")
+ */
 public record RegisterRequest(
         @NotBlank(message = "First name is required") String firstname,
         @NotBlank(message = "Last name is required") String lastname,

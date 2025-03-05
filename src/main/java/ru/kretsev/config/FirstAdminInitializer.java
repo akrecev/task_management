@@ -10,6 +10,9 @@ import ru.kretsev.model.user.Role;
 import ru.kretsev.model.user.User;
 import ru.kretsev.repository.UserRepository;
 
+/**
+ * Initializes the first admin user if no admin exists in the database.
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j

@@ -20,6 +20,9 @@ import ru.kretsev.repository.CommentRepository;
 import ru.kretsev.repository.TaskRepository;
 import ru.kretsev.service.EntityService;
 
+/**
+ * Unit tests for the CommentServiceImpl.
+ */
 @ExtendWith(MockitoExtension.class)
 class CommentServiceImplTest {
     @Mock
