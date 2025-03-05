@@ -89,6 +89,7 @@ tasks.withType<JavaCompile> {
 
     dependsOn("spotlessApply")
 }
+
 apply<name.remal.gradle_plugins.sonarlint.SonarLintPlugin>()
 configure<SonarLintExtension> {
     nodeJs {
@@ -96,6 +97,7 @@ configure<SonarLintExtension> {
         logNodeJsNotFound = false
     }
 }
+
 apply<com.diffplug.gradle.spotless.SpotlessPlugin>()
 configure<com.diffplug.gradle.spotless.SpotlessExtension> {
     java {
@@ -123,4 +125,3 @@ tasks {
         }
     }
 }
-
