@@ -36,9 +36,9 @@ public class TaskController {
     @Operation(summary = "Создать задачу")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Задача успешно создана"),
-                    @ApiResponse(responseCode = "400", description = "Ошибка валидации данных задачи"),
-                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован")
+                @ApiResponse(responseCode = "200", description = "Задача успешно создана"),
+                @ApiResponse(responseCode = "400", description = "Ошибка валидации данных задачи"),
+                @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован")
             })
     @PostMapping
     public ResponseEntity<TaskDto> createTask(@RequestBody @Valid TaskDto taskDto, @AuthenticationPrincipal User user) {
@@ -55,9 +55,9 @@ public class TaskController {
     @Operation(summary = "Назначить задачу пользователю (только администратор)")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Задача успешно назначена"),
-                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не администратор)"),
-                    @ApiResponse(responseCode = "404", description = "Задача или пользователь не найдены")
+                @ApiResponse(responseCode = "200", description = "Задача успешно назначена"),
+                @ApiResponse(responseCode = "403", description = "Доступ запрещён (не администратор)"),
+                @ApiResponse(responseCode = "404", description = "Задача или пользователь не найдены")
             })
     @PutMapping("/{taskId}/assign/{userId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -75,8 +75,8 @@ public class TaskController {
     @Operation(summary = "Получить все задачи (только администратор, с поддержкой пагинации)")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Список задач успешно получен"),
-                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не администратор)")
+                @ApiResponse(responseCode = "200", description = "Список задач успешно получен"),
+                @ApiResponse(responseCode = "403", description = "Доступ запрещён (не администратор)")
             })
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -95,9 +95,9 @@ public class TaskController {
     @Operation(summary = "Получить одну задачу по ID")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Задача успешно получена"),
-                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
-                    @ApiResponse(responseCode = "404", description = "Задача не найдена")
+                @ApiResponse(responseCode = "200", description = "Задача успешно получена"),
+                @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                @ApiResponse(responseCode = "404", description = "Задача не найдена")
             })
     @GetMapping("/{taskId}")
     public ResponseEntity<TaskDto> getTask(@PathVariable Long taskId) {
@@ -117,8 +117,8 @@ public class TaskController {
     @Operation(summary = "Получить список задач текущего пользователя")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Список задач пользователя успешно получен"),
-                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован")
+                @ApiResponse(responseCode = "200", description = "Список задач пользователя успешно получен"),
+                @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован")
             })
     @GetMapping
     public ResponseEntity<List<TaskDto>> getUserTasks(
@@ -139,11 +139,11 @@ public class TaskController {
     @Operation(summary = "Обновить задачу")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Задача успешно обновлена"),
-                    @ApiResponse(responseCode = "400", description = "Ошибка валидации данных задачи"),
-                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
-                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не владелец задачи)"),
-                    @ApiResponse(responseCode = "404", description = "Задача не найдена")
+                @ApiResponse(responseCode = "200", description = "Задача успешно обновлена"),
+                @ApiResponse(responseCode = "400", description = "Ошибка валидации данных задачи"),
+                @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                @ApiResponse(responseCode = "403", description = "Доступ запрещён (не владелец задачи)"),
+                @ApiResponse(responseCode = "404", description = "Задача не найдена")
             })
     @PutMapping("/{taskId}")
     public ResponseEntity<TaskDto> updateTask(
@@ -160,10 +160,10 @@ public class TaskController {
     @Operation(summary = "Удалить задачу (только администратор или владелец)")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "204", description = "Задача успешно удалена"),
-                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
-                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не владелец и не администратор)"),
-                    @ApiResponse(responseCode = "404", description = "Задача не найдена")
+                @ApiResponse(responseCode = "204", description = "Задача успешно удалена"),
+                @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                @ApiResponse(responseCode = "403", description = "Доступ запрещён (не владелец и не администратор)"),
+                @ApiResponse(responseCode = "404", description = "Задача не найдена")
             })
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
@@ -181,10 +181,10 @@ public class TaskController {
     @Operation(summary = "Удаление комментария (только администратор или владелец)")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "204", description = "Комментарий успешно удалён"),
-                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
-                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не владелец и не администратор)"),
-                    @ApiResponse(responseCode = "404", description = "Комментарий или задача не найдены")
+                @ApiResponse(responseCode = "204", description = "Комментарий успешно удалён"),
+                @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                @ApiResponse(responseCode = "403", description = "Доступ запрещён (не владелец и не администратор)"),
+                @ApiResponse(responseCode = "404", description = "Комментарий или задача не найдены")
             })
     @DeleteMapping("/{taskId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long taskId, @PathVariable Long commentId) {

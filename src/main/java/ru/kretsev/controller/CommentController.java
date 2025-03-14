@@ -36,10 +36,10 @@ public class CommentController {
     @Operation(summary = "Добавить комментарий к задаче")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Комментарий успешно добавлен"),
-                    @ApiResponse(responseCode = "400", description = "Ошибка валидации данных комментария"),
-                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
-                    @ApiResponse(responseCode = "404", description = "Задача не найдена")
+                @ApiResponse(responseCode = "200", description = "Комментарий успешно добавлен"),
+                @ApiResponse(responseCode = "400", description = "Ошибка валидации данных комментария"),
+                @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                @ApiResponse(responseCode = "404", description = "Задача не найдена")
             })
     @PostMapping("/{taskId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -57,9 +57,9 @@ public class CommentController {
     @Operation(summary = "Получить комментарий по id")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Комментарий успешно получен"),
-                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не администратор)"),
-                    @ApiResponse(responseCode = "404", description = "Комментарий не найден")
+                @ApiResponse(responseCode = "200", description = "Комментарий успешно получен"),
+                @ApiResponse(responseCode = "403", description = "Доступ запрещён (не администратор)"),
+                @ApiResponse(responseCode = "404", description = "Комментарий не найден")
             })
     @GetMapping("/{commentId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -78,9 +78,9 @@ public class CommentController {
     @Operation(summary = "Получить все комментарии к задаче (с пагинацией)")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Список комментариев успешно получен"),
-                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
-                    @ApiResponse(responseCode = "404", description = "Задача не найдена")
+                @ApiResponse(responseCode = "200", description = "Список комментариев успешно получен"),
+                @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                @ApiResponse(responseCode = "404", description = "Задача не найдена")
             })
     @GetMapping("/task/{taskId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -100,10 +100,10 @@ public class CommentController {
     @Operation(summary = "Удалить комментарий (только если это свой комментарий или админ)")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "204", description = "Комментарий успешно удалён"),
-                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
-                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не владелец и не администратор)"),
-                    @ApiResponse(responseCode = "404", description = "Комментарий не найден")
+                @ApiResponse(responseCode = "204", description = "Комментарий успешно удалён"),
+                @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                @ApiResponse(responseCode = "403", description = "Доступ запрещён (не владелец и не администратор)"),
+                @ApiResponse(responseCode = "404", description = "Комментарий не найден")
             })
     @DeleteMapping("/{commentId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")

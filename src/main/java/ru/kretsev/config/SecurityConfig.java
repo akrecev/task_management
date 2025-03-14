@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -32,7 +33,6 @@ public class SecurityConfig {
 
     /**
      * Configures the security filter chain for HTTP requests.
-     * Sets up CORS, disables CSRF, defines endpoint access rules, and integrates JWT authentication.
      *
      * @param httpSecurity the HTTP security configuration object
      * @return the configured SecurityFilterChain
@@ -42,23 +42,30 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:3000")); // Adjust for production
+                    config.setAllowedOriginPatterns(List.of("http://localhost:*", "https://mydomain.com"));
                     config.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
                     return config;
                 }))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                                "/token/**", "/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/webjars/**")
+                                "/api/v1/auth/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/webjars/**")
                         .permitAll()
                         .requestMatchers("/api/v1/tasks/**")
                         .hasAnyAuthority(ROLE_ADMIN.name(), ROLE_USER.name())
                         .requestMatchers("/api/v1/admin/**")
                         .hasAuthority(ROLE_ADMIN.name())
+                        .requestMatchers("/api/**")
+                        .authenticated()
                         .anyRequest()
-                        .authenticated())
+                        .denyAll())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

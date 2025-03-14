@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "ru.kretsev"
-version = "0.0.1"
+version = "0.1.0"
 
 java {
     toolchain {
@@ -64,6 +64,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocOpenapiVersion")
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
     implementation("com.github.ben-manes.caffeine:caffeine")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")

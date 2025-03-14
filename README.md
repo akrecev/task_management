@@ -122,7 +122,7 @@ taskmanagement/
 
 4. Доступ к приложению:
 - Приложение будет доступно по адресу: `http://localhost:8080`.
-- Swagger UI для тестирования API: http://localhost:8080/swagger-ui.html.
+- Swagger UI для тестирования API: http://localhost:8080/swagger-ui/index.html.
 
 5. Остановка проекта:
    Чтобы остановить проект, выполните:
