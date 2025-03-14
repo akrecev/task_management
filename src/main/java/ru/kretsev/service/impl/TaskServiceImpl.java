@@ -1,6 +1,7 @@
 package ru.kretsev.service.impl;
 
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -91,8 +92,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskDto> getUserTasks(User user) {
-        return taskRepository.findByAuthor(user).stream().map(taskMapper::toDto).toList();
+    public List<TaskDto> getUserTasks(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return taskRepository.findByAuthor(user, pageable).stream()
+                .map(taskMapper::toDto)
+                .toList();
     }
 
     @Override
@@ -138,7 +143,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @CacheEvict(value = "comments", key = "#commentId")
     @Transactional
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long taskId, Long commentId) {
         loggingService.logInfo("Удаление комментария с id={} и удаление из кэша", commentId);
         Comment comment = entityService.findEntityOrElseThrow(commentRepository, commentId, "Комментарий не найден");
 
@@ -148,6 +153,12 @@ public class TaskServiceImpl implements TaskService {
             loggingService.logWarn(
                     "Попытка удаления комментария без прав: commentId={}, user={}", commentId, currentUserEmail);
             throw new AccessDeniedException("Вы можете удалить только свои комментарии.");
+        }
+
+        if (!Objects.equals(comment.getTask().getId(), taskId)) {
+            loggingService.logWarn(
+                    "Попытка удаления комментария из другой задачи: taskId={}, commentId={}", taskId, commentId);
+            throw new AccessDeniedException("Вы можете удалить комментарии только в выбранной задачи.");
         }
 
         commentRepository.delete(comment);

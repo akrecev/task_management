@@ -50,7 +50,7 @@ public interface TaskService {
      * @param user the user
      * @return a list of task DTOs
      */
-    List<TaskDto> getUserTasks(User user);
+    List<TaskDto> getUserTasks(User user, int page, int size);
 
     /**
      * Updates an existing task.
@@ -74,5 +74,5 @@ public interface TaskService {
      *
      * @param commentId the comment ID
      */
-    void deleteComment(Long commentId);
+    void deleteComment(Long taskId, Long commentId);
 }

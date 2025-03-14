@@ -81,15 +81,21 @@ public class TaskController {
     }
 
     /**
-     * Retrieves the tasks of the current user.
+     * Retrieves the tasks of the current user with pagination.
+     *
+     * @param page the page number (default 0)
+     * @param size the page size (default 10)
      *
      * @param user the authenticated user
      * @return a list of task DTOs
      */
     @Operation(summary = "Получить список задач текущего пользователя")
     @GetMapping
-    public ResponseEntity<List<TaskDto>> getUserTasks(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(taskService.getUserTasks(user));
+    public ResponseEntity<List<TaskDto>> getUserTasks(
+            @AuthenticationPrincipal User user,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(taskService.getUserTasks(user, page, size));
     }
 
     /**
@@ -129,9 +135,8 @@ public class TaskController {
      */
     @Operation(summary = "Удаление комментария (только администратор или владелец)")
     @DeleteMapping("/{taskId}/comments/{commentId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Void> deleteComment(@PathVariable Long taskId, @PathVariable Long commentId) {
-        taskService.deleteComment(commentId);
+        taskService.deleteComment(taskId, commentId);
         return ResponseEntity.noContent().build();
     }
 }
