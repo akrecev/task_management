@@ -40,3 +40,5 @@ out
 
 # enviroments
 .env
+
+all_code*
