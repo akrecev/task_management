@@ -1,7 +1,6 @@
 package ru.kretsev.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,25 +18,26 @@ import ru.kretsev.model.user.Role;
 import ru.kretsev.model.user.User;
 import ru.kretsev.repository.UserRepository;
 import ru.kretsev.service.AuthenticationService;
+import ru.kretsev.service.LoggingService;
 
 /**
  * Implementation of the AuthenticationService for user registration and authentication.
  */
 @Service
 @RequiredArgsConstructor
-@Slf4j
 @Transactional(readOnly = true)
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final LoggingService loggingService;
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
 
     @Override
     @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
-        log.info("Попытка регистрации пользователя: email={}", request.email());
+        loggingService.logInfo("Попытка регистрации пользователя: email={}", request.email());
 
         var role = Role.ROLE_USER;
 
@@ -61,25 +61,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         var jwtToken = jwtService.generateToken(user);
 
-        log.info("Пользователь успешно зарегистрирован: email={}", request.email());
+        loggingService.logInfo("Пользователь успешно зарегистрирован: email={}", request.email());
         return new AuthenticationResponse(jwtToken);
     }
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        log.info("Попытка аутентификации пользователя: email={}", request.email());
+        loggingService.logInfo("Попытка аутентификации пользователя: email={}", request.email());
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
         var user = userRepository.findByEmail(request.email()).orElseThrow(() -> {
-            log.error("Пользователь с email={} не найден", request.email());
+            loggingService.logError("Пользователь с email={} не найден", request.email());
             return new UsernameNotFoundException("User not found");
         });
 
         var jwtToken = jwtService.generateToken(user);
 
-        log.info("Пользователь успешно аутентифицирован: email={}", request.email());
+        loggingService.logInfo("Пользователь успешно аутентифицирован: email={}", request.email());
         return new AuthenticationResponse(jwtToken);
     }
 

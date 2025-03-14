@@ -3,7 +3,7 @@ package ru.kretsev.exception;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +13,15 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import ru.kretsev.service.LoggingService;
 
 /**
  * Global exception handler for the application.
  */
 @ControllerAdvice
-@Slf4j
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+    private final LoggingService loggingService;
 
     /**
      * Handles validation exceptions from invalid request data.
@@ -37,7 +39,7 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
 
-        log.warn("Ошибка валидации данных: {}", errors);
+        loggingService.logWarn("Ошибка валидации данных: {}", errors);
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -50,11 +52,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         if (ex.getMessage() != null && ex.getMessage().contains("users_email_key")) {
-            log.warn("Email уже используется другим пользователем: {}", ex.getMessage());
+            loggingService.logWarn("Email уже используется другим пользователем: {}", ex.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email уже используется другим пользователем.");
         }
 
-        log.error("Нарушение целостности данных: {}", ex.getMessage());
+        loggingService.logError("Нарушение целостности данных: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body("Нарушение целостности данных: " + ex.getMessage());
     }
 
@@ -67,7 +69,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
-        log.warn("Доступ запрещен: {}", e.getMessage());
+        loggingService.logWarn("Доступ запрещен: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
@@ -80,7 +82,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
-        log.error("Данные отсутсвуют: {}", e.getMessage());
+        loggingService.logError("Данные отсутствуют: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
@@ -93,7 +95,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<String> handleAllExceptions(Exception e) {
-        log.error("Ошибка выполнения программы: {}", e.getMessage(), e);
+        loggingService.logError("Ошибка выполнения программы: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Произошла внутренняя ошибка сервера \n" + e.getMessage());
     }

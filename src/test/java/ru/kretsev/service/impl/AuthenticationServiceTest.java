@@ -42,6 +42,9 @@ class AuthenticationServiceTest {
     private JwtService jwtService;
 
     @Mock
+    private LoggingServiceImpl loggingService;
+
+    @Mock
     private AuthenticationManager authenticationManager;
 
     @InjectMocks

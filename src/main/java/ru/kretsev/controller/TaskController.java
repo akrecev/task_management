@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +21,6 @@ import ru.kretsev.service.TaskService;
 @RequestMapping("/api/v1/tasks")
 @RequiredArgsConstructor
 @Tag(name = "Задачи", description = "Методы для работы с задачами")
-@Slf4j
 public class TaskController {
     private final TaskService taskService;
 

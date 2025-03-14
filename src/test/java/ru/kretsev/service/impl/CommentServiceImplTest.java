@@ -38,6 +38,9 @@ class CommentServiceImplTest {
     private EntityService entityService;
 
     @Mock
+    private LoggingServiceImpl loggingService;
+
+    @Mock
     private AuthenticationFacade authenticationFacade;
 
     @InjectMocks

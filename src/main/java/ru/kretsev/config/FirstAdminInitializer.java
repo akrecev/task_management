@@ -1,7 +1,6 @@
 package ru.kretsev.config;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,16 +8,17 @@ import org.springframework.stereotype.Component;
 import ru.kretsev.model.user.Role;
 import ru.kretsev.model.user.User;
 import ru.kretsev.repository.UserRepository;
+import ru.kretsev.service.LoggingService;
 
 /**
  * Initializes the first admin user if no admin exists in the database.
  */
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class FirstAdminInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LoggingService loggingService;
 
     @Value("${first-admin.firstname}")
     private String firstname;
@@ -43,7 +43,7 @@ public class FirstAdminInitializer implements CommandLineRunner {
                     .role(Role.ROLE_ADMIN)
                     .build();
             userRepository.save(admin);
-            log.info("Создан первый администратор: admin@example.com");
+            loggingService.logInfo("Создан первый администратор: admin@example.com");
         }
     }
 }

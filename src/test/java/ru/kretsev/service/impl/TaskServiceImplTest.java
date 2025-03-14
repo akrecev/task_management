@@ -36,6 +36,9 @@ class TaskServiceImplTest {
     @Mock
     private EntityService entityService;
 
+    @Mock
+    private LoggingServiceImpl loggingService;
+
     @InjectMocks
     private TaskServiceImpl taskService;
 
