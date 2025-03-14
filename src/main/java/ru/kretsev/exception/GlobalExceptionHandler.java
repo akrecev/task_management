@@ -46,18 +46,18 @@ public class GlobalExceptionHandler {
     /**
      * Handles data integrity violations, such as duplicate email.
      *
-     * @param ex the data integrity exception
+     * @param e the data integrity exception
      * @return an error message
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        if (ex.getMessage() != null && ex.getMessage().contains("users_email_key")) {
-            loggingService.logWarn("Email уже используется другим пользователем: {}", ex.getMessage());
+    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        if (e.getMessage() != null && e.getMessage().contains("users_email_key")) {
+            loggingService.logWarn("Email уже используется другим пользователем: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email уже используется другим пользователем.");
         }
 
-        loggingService.logError("Нарушение целостности данных: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("Нарушение целостности данных: " + ex.getMessage());
+        loggingService.logError("Нарушение целостности данных: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("Нарушение целостности данных: " + e.getMessage());
     }
 
     /**
@@ -84,6 +84,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
         loggingService.logError("Данные отсутствуют: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    /**
+     * Handles illegal arguments exception.
+     *
+     * @param e the entity not found exception
+     * @return an error message
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        loggingService.logWarn("Некорректный аргумент: {}", e.getMessage());
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     /**
