@@ -1,15 +1,16 @@
 package ru.kretsev.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import ru.kretsev.auth.AuthenticationFacade;
 import ru.kretsev.dto.comment.CommentDto;
 import ru.kretsev.mapper.CommentMapper;
@@ -47,6 +48,7 @@ class CommentServiceImplTest {
     private CommentServiceImpl commentService;
 
     @Test
+    @DisplayName("Добавление комментария - успешный сценарий")
     void addCommentShouldReturnCommentDto() {
         Long taskId = 1L;
         CommentDto commentDto = new CommentDto(1L, "Комментарий", null, null);
@@ -75,6 +77,7 @@ class CommentServiceImplTest {
     }
 
     @Test
+    @DisplayName("Удаление комментария - успешный сценарий")
     void deleteComment_ShouldDeleteComment() {
         Long commentId = 1L;
         Comment comment = new Comment();
@@ -93,5 +96,25 @@ class CommentServiceImplTest {
         commentService.deleteComment(commentId);
 
         verify(commentRepository, times(1)).delete(comment);
+    }
+
+    @Test
+    @DisplayName("Удаление комментария - ошибка доступа (пользователь не автор и не админ)")
+    void deleteComment_ShouldThrowAccessDeniedException() {
+        Long commentId = 1L;
+        Comment comment = new Comment();
+        comment.setId(commentId);
+        comment.setContent("Комментарий");
+
+        User user = new User();
+        user.setEmail("user@example.com");
+        comment.setAuthor(user);
+
+        when(entityService.findEntityOrElseThrow(commentRepository, commentId, "Комментарий не найден"))
+                .thenReturn(comment);
+        when(authenticationFacade.getCurrentUserEmail()).thenReturn("anotheruser@example.com");
+        when(authenticationFacade.getCurrentUserRoles()).thenReturn(List.of("ROLE_USER"));
+
+        assertThrows(AccessDeniedException.class, () -> commentService.deleteComment(commentId));
     }
 }

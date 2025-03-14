@@ -6,6 +6,7 @@ import static ru.kretsev.model.user.Role.*;
 
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +31,7 @@ import ru.kretsev.repository.UserRepository;
  * Unit tests for the AuthenticationServiceImpl.
  */
 @ExtendWith(MockitoExtension.class)
-class AuthenticationServiceTest {
+class AuthenticationServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -62,7 +63,13 @@ class AuthenticationServiceTest {
                 .lastname("Doe")
                 .email(EMAIL)
                 .password(ENCODED_PASSWORD)
+                .role(ROLE_USER)
                 .build();
+    }
+
+    @BeforeEach
+    void setUp() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -92,12 +99,11 @@ class AuthenticationServiceTest {
     void testAuthenticateSuccess() {
         AuthenticationRequest request = new AuthenticationRequest(EMAIL, PASSWORD);
         User user = createTestUser();
-        user.setRole(ROLE_USER);
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
         when(jwtService.generateToken(user)).thenReturn(MOCK_JWT_TOKEN);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(new UsernamePasswordAuthenticationToken(user, PASSWORD));
+                .thenReturn(new UsernamePasswordAuthenticationToken(user, PASSWORD, user.getAuthorities()));
 
         AuthenticationResponse response = authenticationService.authenticate(request);
 

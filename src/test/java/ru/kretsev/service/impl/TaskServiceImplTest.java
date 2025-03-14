@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,6 +44,7 @@ class TaskServiceImplTest {
     private TaskServiceImpl taskService;
 
     @Test
+    @DisplayName("Создание задачи - успешный сценарий")
     void createTaskShouldReturnTaskDto() {
         TaskDto taskDto = new TaskDto(1L, "Новая задача", "Описание", "PENDING", "HIGH", null, null, List.of());
         User user = new User();
@@ -64,6 +66,7 @@ class TaskServiceImplTest {
     }
 
     @Test
+    @DisplayName("Назначение задачи пользователю - успешный сценарий")
     void assignTaskShouldAssignTaskToUser() {
         Long taskId = 1L;
         Long userId = 2L;
@@ -93,6 +96,7 @@ class TaskServiceImplTest {
     }
 
     @Test
+    @DisplayName("Получение задачи по ID - успешный сценарий")
     void getTaskShouldReturnTaskDto() {
         Long taskId = 1L;
         Task task = new Task();
@@ -113,6 +117,7 @@ class TaskServiceImplTest {
     }
 
     @Test
+    @DisplayName("Обновление задачи - ошибка доступа (пользователь не автор и не админ)")
     void updateTask_ShouldThrowAccessDeniedException() {
         Long taskId = 1L;
         TaskDto taskDto = new TaskDto(taskId, "Новая задача", "Описание", "PENDING", "HIGH", null, null, List.of());
