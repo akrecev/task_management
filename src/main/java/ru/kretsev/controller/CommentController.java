@@ -1,6 +1,8 @@
 package ru.kretsev.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,13 @@ public class CommentController {
      * @return the created comment DTO
      */
     @Operation(summary = "Добавить комментарий к задаче")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Комментарий успешно добавлен"),
+                    @ApiResponse(responseCode = "400", description = "Ошибка валидации данных комментария"),
+                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                    @ApiResponse(responseCode = "404", description = "Задача не найдена")
+            })
     @PostMapping("/{taskId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<CommentDto> addComment(
@@ -46,6 +55,12 @@ public class CommentController {
      * @return the comment DTO
      */
     @Operation(summary = "Получить комментарий по id")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Комментарий успешно получен"),
+                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не администратор)"),
+                    @ApiResponse(responseCode = "404", description = "Комментарий не найден")
+            })
     @GetMapping("/{commentId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommentDto> getCommentsByTaskId(@PathVariable Long commentId) {
@@ -61,6 +76,12 @@ public class CommentController {
      * @return a paginated list of comment DTOs
      */
     @Operation(summary = "Получить все комментарии к задаче (с пагинацией)")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Список комментариев успешно получен"),
+                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                    @ApiResponse(responseCode = "404", description = "Задача не найдена")
+            })
     @GetMapping("/task/{taskId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Page<CommentDto>> getCommentsByTaskId(
@@ -77,6 +98,13 @@ public class CommentController {
      * @return no content response
      */
     @Operation(summary = "Удалить комментарий (только если это свой комментарий или админ)")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "204", description = "Комментарий успешно удалён"),
+                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не владелец и не администратор)"),
+                    @ApiResponse(responseCode = "404", description = "Комментарий не найден")
+            })
     @DeleteMapping("/{commentId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {

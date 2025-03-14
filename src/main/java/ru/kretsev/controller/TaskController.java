@@ -1,6 +1,8 @@
 package ru.kretsev.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -32,6 +34,12 @@ public class TaskController {
      * @return ResponseEntity containing the created TaskDto
      */
     @Operation(summary = "Создать задачу")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Задача успешно создана"),
+                    @ApiResponse(responseCode = "400", description = "Ошибка валидации данных задачи"),
+                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован")
+            })
     @PostMapping
     public ResponseEntity<TaskDto> createTask(@RequestBody @Valid TaskDto taskDto, @AuthenticationPrincipal User user) {
         return ResponseEntity.ok(taskService.createTask(taskDto, user));
@@ -45,6 +53,12 @@ public class TaskController {
      * @return ResponseEntity containing the updated TaskDto
      */
     @Operation(summary = "Назначить задачу пользователю (только администратор)")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Задача успешно назначена"),
+                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не администратор)"),
+                    @ApiResponse(responseCode = "404", description = "Задача или пользователь не найдены")
+            })
     @PutMapping("/{taskId}/assign/{userId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TaskDto> assignTask(@PathVariable Long taskId, @PathVariable Long userId) {
@@ -59,6 +73,11 @@ public class TaskController {
      * @return ResponseEntity containing a paginated list of TaskDtos
      */
     @Operation(summary = "Получить все задачи (только администратор, с поддержкой пагинации)")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Список задач успешно получен"),
+                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не администратор)")
+            })
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Page<TaskDto>> getAllTasks(
@@ -74,6 +93,12 @@ public class TaskController {
      * @return ResponseEntity containing the TaskDto
      */
     @Operation(summary = "Получить одну задачу по ID")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Задача успешно получена"),
+                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                    @ApiResponse(responseCode = "404", description = "Задача не найдена")
+            })
     @GetMapping("/{taskId}")
     public ResponseEntity<TaskDto> getTask(@PathVariable Long taskId) {
         TaskDto task = taskService.getTask(taskId);
@@ -90,6 +115,11 @@ public class TaskController {
      * @return a list of task DTOs
      */
     @Operation(summary = "Получить список задач текущего пользователя")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Список задач пользователя успешно получен"),
+                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован")
+            })
     @GetMapping
     public ResponseEntity<List<TaskDto>> getUserTasks(
             @AuthenticationPrincipal User user,
@@ -107,6 +137,14 @@ public class TaskController {
      * @return the updated task DTO
      */
     @Operation(summary = "Обновить задачу")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Задача успешно обновлена"),
+                    @ApiResponse(responseCode = "400", description = "Ошибка валидации данных задачи"),
+                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не владелец задачи)"),
+                    @ApiResponse(responseCode = "404", description = "Задача не найдена")
+            })
     @PutMapping("/{taskId}")
     public ResponseEntity<TaskDto> updateTask(
             @PathVariable Long taskId, @RequestBody @Valid TaskDto taskDto, @AuthenticationPrincipal User user) {
@@ -120,6 +158,13 @@ public class TaskController {
      * @return no content response
      */
     @Operation(summary = "Удалить задачу (только администратор или владелец)")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "204", description = "Задача успешно удалена"),
+                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не владелец и не администратор)"),
+                    @ApiResponse(responseCode = "404", description = "Задача не найдена")
+            })
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
         taskService.deleteTask(taskId);
@@ -134,6 +179,13 @@ public class TaskController {
      * @return no content response
      */
     @Operation(summary = "Удаление комментария (только администратор или владелец)")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "204", description = "Комментарий успешно удалён"),
+                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован"),
+                    @ApiResponse(responseCode = "403", description = "Доступ запрещён (не владелец и не администратор)"),
+                    @ApiResponse(responseCode = "404", description = "Комментарий или задача не найдены")
+            })
     @DeleteMapping("/{taskId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long taskId, @PathVariable Long commentId) {
         taskService.deleteComment(taskId, commentId);

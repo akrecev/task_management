@@ -35,8 +35,9 @@ public class AuthenticationController {
     @Operation(summary = "Регистрация нового пользователя", description = "Создаёт нового пользователя в системе")
     @ApiResponses(
             value = {
-                @ApiResponse(responseCode = "200", description = "Пользователь успешно зарегистрирован"),
-                @ApiResponse(responseCode = "400", description = "Ошибка валидации входных данных")
+                    @ApiResponse(responseCode = "200", description = "Пользователь успешно зарегистрирован"),
+                    @ApiResponse(responseCode = "400", description = "Ошибка валидации входных данных"),
+                    @ApiResponse(responseCode = "409", description = "Email уже используется другим пользователем")
             })
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid RegisterRequest request) {
@@ -52,8 +53,9 @@ public class AuthenticationController {
     @Operation(summary = "Аутентификация пользователя", description = "Возвращает JWT-токен при успешной авторизации")
     @ApiResponses(
             value = {
-                @ApiResponse(responseCode = "200", description = "Успешная аутентификация"),
-                @ApiResponse(responseCode = "403", description = "Неверные учетные данные")
+                    @ApiResponse(responseCode = "200", description = "Успешная аутентификация"),
+                    @ApiResponse(responseCode = "400", description = "Ошибка валидации входных данных"),
+                    @ApiResponse(responseCode = "403", description = "Неверные учетные данные")
             })
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody @Valid AuthenticationRequest request) {
@@ -67,6 +69,11 @@ public class AuthenticationController {
      * @return ResponseEntity containing a UserShortDto with user details
      */
     @Operation(summary = "Получение информации о текущем пользователе")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Информация о пользователе успешно получена"),
+                    @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован")
+            })
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserShortDto> getCurrentUser(Authentication authentication) {
