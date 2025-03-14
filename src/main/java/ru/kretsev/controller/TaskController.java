@@ -25,11 +25,11 @@ public class TaskController {
     private final TaskService taskService;
 
     /**
-     * Creates a new task.
+     * Creates a new task and assigns it to the authenticated user as the author.
      *
      * @param taskDto the task details DTO
-     * @param user the authenticated user creating the task
-     * @return the created task DTO
+     * @param user    the authenticated user creating the task
+     * @return ResponseEntity containing the created TaskDto
      */
     @Operation(summary = "Создать задачу")
     @PostMapping
@@ -38,11 +38,11 @@ public class TaskController {
     }
 
     /**
-     * Assigns a task to a user (admin only).
+     * Assigns a task to a specified user (admin only).
      *
-     * @param taskId the ID of the task
+     * @param taskId the ID of the task to assign
      * @param userId the ID of the user to assign the task to
-     * @return the updated task DTO
+     * @return ResponseEntity containing the updated TaskDto
      */
     @Operation(summary = "Назначить задачу пользователю (только администратор)")
     @PutMapping("/{taskId}/assign/{userId}")
@@ -56,7 +56,7 @@ public class TaskController {
      *
      * @param page the page number (default 0)
      * @param size the page size (default 10)
-     * @return a paginated list of task DTOs
+     * @return ResponseEntity containing a paginated list of TaskDtos
      */
     @Operation(summary = "Получить все задачи (только администратор, с поддержкой пагинации)")
     @GetMapping("/all")
@@ -70,8 +70,8 @@ public class TaskController {
     /**
      * Retrieves a single task by its ID.
      *
-     * @param taskId the ID of the task
-     * @return the task DTO
+     * @param taskId the ID of the task to retrieve
+     * @return ResponseEntity containing the TaskDto
      */
     @Operation(summary = "Получить одну задачу по ID")
     @GetMapping("/{taskId}")

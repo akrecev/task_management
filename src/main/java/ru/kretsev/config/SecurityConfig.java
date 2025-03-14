@@ -18,7 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import ru.kretsev.auth.JwtAuthenticationFilter;
 
 /**
- * Configuration class for Spring Security settings including CORS and authentication.
+ * Configuration class for Spring Security settings, including CORS, JWT authentication, and authorization rules.
  */
 @Configuration
 @EnableWebSecurity
@@ -31,11 +31,12 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
 
     /**
-     * Configures the security filter chain with CORS, JWT authentication, and authorization rules.
+     * Configures the security filter chain for HTTP requests.
+     * Sets up CORS, disables CSRF, defines endpoint access rules, and integrates JWT authentication.
      *
-     * @param httpSecurity the HTTP security configuration
-     * @return the configured {@link SecurityFilterChain}
-     * @throws Exception if configuration fails
+     * @param httpSecurity the HTTP security configuration object
+     * @return the configured SecurityFilterChain
+     * @throws Exception if configuration fails during setup
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

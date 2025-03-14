@@ -27,10 +27,10 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     /**
-     * Registers a new user in the system.
+     * Registers a new user in the system and returns a JWT token.
      *
-     * @param request the registration request containing user details
-     * @return the authentication response with a JWT token
+     * @param request the registration request containing user details (first name, last name, email, password, role)
+     * @return ResponseEntity containing the AuthenticationResponse with a JWT token
      */
     @Operation(summary = "Регистрация нового пользователя", description = "Создаёт нового пользователя в системе")
     @ApiResponses(
@@ -44,10 +44,10 @@ public class AuthenticationController {
     }
 
     /**
-     * Authenticates a user and returns a JWT token.
+     * Authenticates a user based on email and password, returning a JWT token.
      *
      * @param request the authentication request containing email and password
-     * @return the authentication response with a JWT token
+     * @return ResponseEntity containing the AuthenticationResponse with a JWT token
      */
     @Operation(summary = "Аутентификация пользователя", description = "Возвращает JWT-токен при успешной авторизации")
     @ApiResponses(
@@ -63,8 +63,8 @@ public class AuthenticationController {
     /**
      * Retrieves information about the currently authenticated user.
      *
-     * @param authentication the current authentication object
-     * @return the short user DTO
+     * @param authentication the current authentication object from the security context
+     * @return ResponseEntity containing a UserShortDto with user details
      */
     @Operation(summary = "Получение информации о текущем пользователе")
     @GetMapping("/me")
