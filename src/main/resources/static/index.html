@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Task Manager UI</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button, textarea, select { margin: 5px 0; display: block; width: 300px; }
+    .section { margin-bottom: 30px; }
+    .task-item { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <h1>Task Manager (Мини UI)</h1>
+
+  <div class="section" id="auth-section">
+    <h2>1. Авторизация</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Пароль" />
+    <button onclick="login()">Войти</button>
+    <p id="auth-status"></p>
+  </div>
+
+  <div class="section" id="tasks-section" style="display:none">
+    <h2>2. Пользователь: <span id="user-role"></span></h2>
+
+    <h3>Фильтр задач</h3>
+    <select id="filter-status">
+      <option value="">Статус (все)</option>
+      <option value="PENDING">PENDING</option>
+      <option value="IN_PROGRESS">IN_PROGRESS</option>
+      <option value="COMPLETE">COMPLETE</option>
+    </select>
+    <select id="filter-priority">
+      <option value="">Приоритет (все)</option>
+      <option value="HIGH">HIGH</option>
+      <option value="MEDIUM">MEDIUM</option>
+      <option value="LOW">LOW</option>
+    </select>
+    <button onclick="loadTasks()">Применить фильтр</button>
+
+    <h3>Задачи</h3>
+    <ul id="task-list"></ul>
+
+    <h3>3. Новая задача</h3>
+    <input id="task-title" placeholder="Название задачи" />
+    <textarea id="task-desc" placeholder="Описание"></textarea>
+    <select id="task-priority">
+      <option value="HIGH">HIGH</option>
+      <option value="MEDIUM">MEDIUM</option>
+      <option value="LOW">LOW</option>
+    </select>
+    <button onclick="createTask()">Создать</button>
+    <p id="task-create-status"></p>
+  </div>
+
+  <script>
+    let token = null;
+    let userRole = null;
+    let currentUserId = null;
+
+    function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      fetch('http://localhost:8080/api/v1/auth/authenticate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.token) {
+          token = data.token;
+          document.getElementById('auth-status').innerText = "Успешный вход!";
+          document.getElementById('tasks-section').style.display = 'block';
+          fetchCurrentUser();
+        } else {
+          document.getElementById('auth-status').innerText = "Ошибка авторизации";
+        }
+      });
+    }
+
+    function fetchCurrentUser() {
+      fetch('http://localhost:8080/api/v1/auth/me', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(res => res.json())
+      .then(user => {
+        userRole = user.role;
+        currentUserId = user.id;
+        document.getElementById('user-role').innerText = `${user.firstname} (${user.role})`;
+        loadTasks();
+      });
+    }
+
+    function loadTasks() {
+      const status = document.getElementById('filter-status').value;
+      const priority = document.getElementById('filter-priority').value;
+
+      fetch(`http://localhost:8080/api/v1/tasks?status=${status}&priority=${priority}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(res => res.json())
+      .then(tasks => {
+        const list = document.getElementById('task-list');
+        list.innerHTML = '';
+        tasks.forEach(task => {
+          const li = document.createElement('li');
+          li.className = 'task-item';
+          li.innerHTML = `
+            <strong>${task.title}</strong> — ${task.status} (${task.priority})<br/>
+            Автор: ${task.author.firstname} ${task.author.lastname}<br/>
+            Назначен: ${task.assignee ? task.assignee.firstname : '-'}<br/>
+            <em>${task.description}</em><br/>
+            <div id="comments-${task.id}"></div>
+            ${userRole ? `
+              <textarea id="comment-${task.id}" placeholder="Комментарий..."></textarea>
+              <button onclick="addComment(${task.id})">Оставить комментарий</button>
+              <button onclick="loadComments(${task.id})">Показать комментарии</button>
+            ` : ''}
+            ${userRole === 'ROLE_ADMIN' ? `
+              <input type="number" id="assignee-${task.id}" placeholder="ID пользователя" />
+              <button onclick="assignTask(${task.id})">Назначить</button>
+            ` : ''}
+            <button onclick="deleteTask(${task.id})">Удалить задачу</button>
+          `;
+          list.appendChild(li);
+        });
+      });
+    }
+
+    function createTask() {
+      const title = document.getElementById('task-title').value;
+      const description = document.getElementById('task-desc').value;
+      const priority = document.getElementById('task-priority').value;
+
+      fetch('http://localhost:8080/api/v1/tasks', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title, description,
+          status: "PENDING",
+          priority
+        })
+      })
+      .then(res => {
+        if (res.ok) {
+          document.getElementById('task-create-status').innerText = "Задача создана!";
+          loadTasks();
+        } else {
+          document.getElementById('task-create-status').innerText = "Ошибка создания задачи";
+        }
+      });
+    }
+
+    function addComment(taskId) {
+      const content = document.getElementById(`comment-${taskId}`).value;
+
+      fetch(`http://localhost:8080/api/v1/comments/${taskId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content })
+      })
+      .then(res => {
+        if (res.ok) {
+          alert('Комментарий добавлен!');
+          loadComments(taskId);
+        } else {
+          alert('Ошибка при добавлении комментария');
+        }
+      });
+    }
+
+    function loadComments(taskId) {
+      fetch(`http://localhost:8080/api/v1/comments/task/${taskId}?page=0&size=10`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById(`comments-${taskId}`);
+        container.innerHTML = `<h4>Комментарии:</h4>`;
+        data.content.forEach(comment => {
+          const p = document.createElement('p');
+          p.innerHTML = `- ${comment.content} (от ${comment.userShortDto.firstname})
+            ${userRole === 'ROLE_ADMIN' || comment.userShortDto.id === currentUserId
+              ? `<button onclick="deleteComment(${comment.taskShortDto.id}, ${comment.id})">Удалить</button>`
+              : ''}`;
+          container.appendChild(p);
+        });
+      });
+    }
+
+    function deleteTask(taskId) {
+      if (!confirm("Удалить задачу?")) return;
+      fetch(`http://localhost:8080/api/v1/tasks/${taskId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("Задача удалена");
+          loadTasks();
+        } else {
+          alert("Ошибка удаления (возможно, нет прав)");
+        }
+      });
+    }
+
+    function deleteComment(taskId, commentId) {
+      if (!confirm("Удалить комментарий?")) return;
+      fetch(`http://localhost:8080/api/v1/tasks/${taskId}/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("Комментарий удалён");
+          loadComments(taskId);
+        } else {
+          alert("Ошибка удаления комментария");
+        }
+      });
+    }
+
+    function assignTask(taskId) {
+      const userId = document.getElementById(`assignee-${taskId}`).value;
+      fetch(`http://localhost:8080/api/v1/tasks/${taskId}/assign/${userId}`, {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(res => {
+        if (res.ok) {
+          alert('Назначено!');
+          loadTasks();
+        } else {
+          alert('Ошибка назначения');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
