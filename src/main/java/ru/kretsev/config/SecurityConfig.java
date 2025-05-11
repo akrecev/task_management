@@ -58,10 +58,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/webjars/**",
                                 "/index.html",
-                                "/",
-                                "/**/*.js",
-                                "/**/*.css",
-                                "/**/*.html")
+                                "/")
                         .permitAll()
                         .requestMatchers("/api/v1/tasks/**")
                         .hasAnyAuthority(ROLE_ADMIN.name(), ROLE_USER.name())
