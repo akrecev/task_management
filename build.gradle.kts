@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "ru.kretsev"
-version = "0.0.1"
+version = "0.1.0"
 
 java {
     toolchain {
@@ -58,8 +58,17 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-logging")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocOpenapiVersion")
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
+    implementation("com.github.ben-manes.caffeine:caffeine")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
+
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
@@ -81,6 +90,7 @@ tasks.withType<JavaCompile> {
 
     dependsOn("spotlessApply")
 }
+
 apply<name.remal.gradle_plugins.sonarlint.SonarLintPlugin>()
 configure<SonarLintExtension> {
     nodeJs {
@@ -88,6 +98,7 @@ configure<SonarLintExtension> {
         logNodeJsNotFound = false
     }
 }
+
 apply<com.diffplug.gradle.spotless.SpotlessPlugin>()
 configure<com.diffplug.gradle.spotless.SpotlessExtension> {
     java {
@@ -115,4 +126,3 @@ tasks {
         }
     }
 }
-
